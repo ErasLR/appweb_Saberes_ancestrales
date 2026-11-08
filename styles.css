@@ -4,10 +4,9 @@
    ========================================= */
 
 /* =========================================
-   1. VARIABLES
+   1. VARIABLES Y COLORES
    ========================================= */
 :root {
-    /* ---------- 🎨 COLORES ---------- */
     --bg-body:      #e5e5e5;
     --bg-app:       #F5EBD7;
     --bg-card:      #FFFFFF;
@@ -20,44 +19,28 @@
     --border-color: #e0e0e0;
     --shadow:       0 4px 12px rgba(0,0,0,0.08);
 
-    /* =========================================
-       🖼️ TAMAÑOS DEL LOGO (+150%)
-       ========================================= */
+    /* Tamaños del Logo al 120% */
     --logo-celular:         75px;  
     --logo-tablet:          98px;  
     --logo-laptop:          117px; 
     --logo-pantalla-grande: 135px; 
 
-    /* ---------- 📏 MEDIDAS GLOBALES ---------- */
+    /* Medidas Globales */
     --app-padding:   20px;
     --nav-height:    70px;
     --radius:        15px;
     --radius-grande: 20px;
 }
 
+/* Modo Oscuro */
 body.dark-mode {
-    /* Fondo general de la app: Un café casi negro, muy elegante */
     --bg-app:       #12100E; 
-    
-    /* Fondo de las tarjetas y modales: Café oscuro para resaltar */
     --bg-card:      #1F1916; 
-    
-    /* Texto principal: El color crema de tu marca para que resalte perfecto */
     --texto-main:   #F5EBD7; 
-    
-    /* Texto secundario (descripciones, textos pequeños): Un tono más apagado pero visible */
     --texto-muted:  #A39A91; 
-    
-    /* Cabecera superior y botones: Café oscuro */
     --cafe:         #2D211A; 
-    
-    /* Texto de la cabecera (Logo, Slogan, Iconos): Crema brillante para que se lea perfecto */
     --crema:        #F5EBD7; 
-    
-    /* Bordes: Sutilmente oscuros */
     --border-color: #3A2F29; 
-    
-    /* Sombra: Más pronunciada para dar profundidad en modo oscuro */
     --shadow:       0 4px 12px rgba(0,0,0,0.5);
 }
 
@@ -127,12 +110,10 @@ body {
     transition: width 0.3s ease, height 0.3s ease;
 }
 
-/* =========================================
-   TEXTO DEL LOGO AL 120% (Corregido)
-   ========================================= */
+/* Texto del Logo al 120% */
 .logo-nombre {
     font-family: Georgia, serif;
-    font-size: 1.68rem !important; /* Aumento del 120% */
+    font-size: 1.68rem !important; 
     font-weight: bold !important;
     color: var(--crema) !important;
     line-height: 1.1 !important;
@@ -142,19 +123,35 @@ body {
 .logo-slogan {
     font-family: Georgia, serif;
     font-style: italic;
-    font-size: 1.2rem !important; /* Aumento del 120% */
+    font-size: 1.2rem !important; 
     color: var(--dorado) !important;
     margin-top: 5px;
     display: block !important;
 }
 
-/* Ajustes para pantallas grandes (PC) */
-@media (min-width: 1024px) {
-    .logo-nombre { font-size: 2.4rem !important; } 
-    .logo-slogan { font-size: 1.8rem !important; }
+/* Botón de Tema (Luna/Sol) */
+.header-actions { display: flex; gap: 10px; }
+
+.icon-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--dorado);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: var(--crema);
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
+.icon-btn:hover { background: var(--dorado); color: var(--cafe); transform: rotate(20deg) scale(1.1); }
+.icon-btn:active { transform: scale(0.9); }
+
 /* =========================================
-   4. CONTENIDO
+   4. CONTENIDO GENERAL
    ========================================= */
 .app-content {
     flex: 1;
@@ -175,12 +172,12 @@ body {
 }
 
 /* =========================================
-   5. HERO (INICIO) - IMAGEN CORREGIDA
+   5. HERO (INICIO)
    ========================================= */
 .hero-app {
     background-image:
         linear-gradient(rgba(74, 48, 37, 0.9), rgba(74, 48, 37, 0.9)),
-        url('https://jardindelzen.com/wp-content/uploads/2016/12/vainilla-1024x768.jpg'); /* URL corregida sin espacios */
+        url('https://jardindelzen.com/wp-content/uploads/2016/12/vainilla-1024x768.jpg');
     background-size: cover;
     background-position: center;
     border-radius: var(--radius-grande);
@@ -190,13 +187,7 @@ body {
     margin-bottom: 20px;
 }
 
-.hero-app h1 {
-    font-family: Georgia, serif;
-    font-size: 1.6rem;
-    margin-bottom: 10px;
-    color: var(--crema);
-}
-
+.hero-app h1 { font-family: Georgia, serif; font-size: 1.6rem; margin-bottom: 10px; color: var(--crema); }
 .hero-app p { color: var(--dorado); margin-bottom: 20px; font-size: 0.95rem; }
 
 .info-card {
@@ -265,7 +256,7 @@ body {
 .add-btn:active { transform: scale(0.95); }
 
 /* =========================================
-   7. BOTÓN FLOTANTE
+   7. BOTÓN FLOTANTE CARRITO
    ========================================= */
 .floating-cart-btn {
     position: absolute;
@@ -304,7 +295,7 @@ body {
 }
 
 /* =========================================
-   8. FORMULARIOS
+   8. FORMULARIOS GENERALES
    ========================================= */
 .form-app {
     background: var(--bg-card);
@@ -491,7 +482,7 @@ body {
 .btn-added { background-color: var(--verde) !important; color: white !important; }
 
 /* =========================================
-   14. PERSONALIZACIÓN
+   14. PERSONALIZACIÓN (RADIOS)
    ========================================= */
 .custom-options-container { margin-bottom: 20px; }
 .custom-group {
@@ -540,17 +531,191 @@ body {
 #ticket-pdf-area hr { border-top: 1px dashed #000; }
 #ticket-items p { margin: 2px 0; font-size: 12px; }
 
-body.dark-mode .icon-btn i { color: var(--dorado); }
+/* =========================================
+   16. DISEÑO EXCLUSIVO DEL LOGIN (ESTILO TARJETAS)
+   ========================================= */
+#auth-initial-view {
+    display: flex;
+    flex-direction: column;
+    gap: 25px; /* Separación entre tarjetas */
+    padding: 20px 10px;
+    max-width: 450px;
+    margin: 0 auto; /* Centrado horizontal */
+}
+
+/* Tarjeta Café (¿Eres nuevo?) */
+.auth-card-brown {
+    background-color: #7A5B43;
+    border-radius: 20px;
+    padding: 35px 25px;
+    text-align: center;
+    color: #FFFFFF;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+.auth-card-brown h3 {
+    font-family: Georgia, serif;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: #FFFFFF !important;
+}
+.auth-card-brown p {
+    font-size: 1rem;
+    margin-bottom: 25px;
+    color: #E0D5C1;
+    line-height: 1.4;
+}
+.auth-icon-circle {
+    width: 50px;
+    height: 50px;
+    background: transparent;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 15px auto;
+    font-size: 1.8rem;
+    color: #FFFFFF;
+}
+.btn-auth-cream {
+    background-color: #F5EBD7;
+    color: #4A3025;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    width: 100%;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-auth-cream:active { transform: scale(0.95); }
+
+/* Tarjeta Blanca (¿Ya tienes cuenta?) */
+.auth-card-white {
+    background-color: #FFFFFF;
+    border-radius: 20px;
+    padding: 35px 25px;
+    text-align: center;
+    border: 1px solid #D4C4B7;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+.auth-card-white h3 {
+    font-family: Georgia, serif;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: #4A3025 !important;
+}
+.auth-card-white p {
+    font-size: 1rem;
+    margin-bottom: 25px;
+    color: #666666;
+    line-height: 1.4;
+}
+.auth-icon-circle-outline {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #7A5B43;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 15px auto;
+    font-size: 1.5rem;
+    color: #7A5B43;
+}
+.btn-auth-green {
+    background-color: #7A8B52;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    width: 100%;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-auth-green:active { transform: scale(0.95); }
+
+/* Contenedor de los Formularios */
+.auth-form-container {
+    background: var(--bg-card);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    max-width: 450px;
+    margin: 10px auto 30px auto;
+    width: 100%;
+}
+.auth-form-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+.auth-form-header h3 {
+    font-family: Georgia, serif;
+    font-size: 1.5rem;
+    color: var(--cafe);
+    margin: 0;
+}
+.btn-back {
+    background: var(--bg-app);
+    color: var(--cafe);
+    border: 1px solid var(--border-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.2s;
+}
+.btn-back:hover { background: var(--dorado); color: #000; }
+.spacer { width: 40px; }
 
 /* =========================================
-   16. 📱 TABLET (Ajustes de 150%)
+   17. CORRECCIÓN DE TEXTO EN MODO OSCURO
+   ========================================= */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode .section-title,
+body.dark-mode .info-card h3,
+body.dark-mode .card-food-body h3,
+body.dark-mode .input-group label,
+body.dark-mode .logo-nombre,
+body.dark-mode .custom-group p,
+body.dark-mode #payment-step-card h3,
+body.dark-mode .cart-item-info span {
+    color: #F5EBD7 !important;
+}
+
+body.dark-mode p,
+body.dark-mode .card-food-body p,
+body.dark-mode .info-card p {
+    color: #E0D5C1 !important;
+}
+
+body.dark-mode .auth-card-white { background-color: var(--bg-card); border-color: var(--border-color); }
+body.dark-mode .auth-card-white h3, body.dark-mode .auth-icon-circle-outline { color: var(--texto-main) !important; border-color: var(--texto-main); }
+body.dark-mode .auth-card-white p { color: var(--texto-muted) !important; }
+body.dark-mode .auth-form-header h3 { color: var(--texto-main) !important; }
+body.dark-mode .btn-back { background: var(--border-color); color: var(--texto-main); }
+
+body.dark-mode .icon-btn { background: rgba(197, 139, 69, 0.2); color: var(--dorado); }
+body.dark-mode .icon-btn:hover { background: var(--dorado); color: var(--cafe); }
+
+/* =========================================
+   18. RESPONSIVO (TABLET Y PC)
    ========================================= */
 @media (min-width: 600px) {
     :root { --app-padding: 25px; --nav-height: 75px; }
-    
     .logo-area img { width: var(--logo-tablet); height: var(--logo-tablet); }
-    .logo-texto span:first-child { font-size: 2.8rem; } /* 150% más en tablet */
-    .logo-slogan { font-size: 1.8rem; }
+    .logo-nombre { font-size: 2.4rem !important; }
+    .logo-slogan { font-size: 1.6rem !important; }
     .app-header { padding: 18px 25px; min-height: 125px; }
     
     .grid-menu { grid-template-columns: repeat(2, 1fr); gap: 18px; }
@@ -567,16 +732,12 @@ body.dark-mode .icon-btn i { color: var(--dorado); }
     .modal-overlay.hidden .modal-content { transform: translateY(20px) scale(0.95); }
 }
 
-/* =========================================
-   17. 💻 LAPTOP / DESKTOP
-   ========================================= */
 @media (min-width: 1024px) {
     :root { --app-padding: 30px; --nav-height: 80px; }
-    
     .app-container { max-width: 1400px; box-shadow: 0 0 40px rgba(0,0,0,0.15); }
     .logo-area img { width: var(--logo-laptop); height: var(--logo-laptop); }
-    .logo-texto span:first-child { font-size: 3.2rem; } /* 150% más en PC */
-    .logo-slogan { font-size: 2.2rem; }
+    .logo-nombre { font-size: 3rem !important; }
+    .logo-slogan { font-size: 2rem !important; }
     .app-header { padding: 22px 35px; min-height: 155px; }
     
     .grid-menu { grid-template-columns: repeat(3, 1fr); gap: 22px; }
@@ -586,18 +747,13 @@ body.dark-mode .icon-btn i { color: var(--dorado); }
     .section-title { font-size: 2.3rem; margin-bottom: 28px; }
     .card-food img { height: 180px; }
     .filtros-scroll { justify-content: center; padding-bottom: 20px; }
-    .form-app { padding: 30px; }
 }
 
-/* =========================================
-   18. 🖥️ PANTALLAS MUY GRANDES
-   ========================================= */
 @media (min-width: 1400px) {
     :root { --app-padding: 40px; }
-    
     .logo-area img { width: var(--logo-pantalla-grande); height: var(--logo-pantalla-grande); }
-    .logo-texto span:first-child { font-size: 3.8rem; } 
-    .logo-slogan { font-size: 2.5rem; }
+    .logo-nombre { font-size: 3.6rem !important; } 
+    .logo-slogan { font-size: 2.4rem !important; }
     .app-header { padding: 24px 45px; min-height: 175px; }
     
     .grid-menu { grid-template-columns: repeat(4, 1fr); }
@@ -605,54 +761,10 @@ body.dark-mode .icon-btn i { color: var(--dorado); }
     .hero-app h1 { font-size: 2.5rem; }
 }
 
-/* =========================================
-   19. 📱 CELULARES PEQUEÑOS
-   ========================================= */
 @media (max-width: 360px) {
     :root { --logo-celular: 65px; --app-padding: 15px; }
-    .logo-texto span:first-child { font-size: 1.8rem; } /* Ajuste para que no se rompa */
-    .logo-slogan { font-size: 1.2rem; }
+    .logo-nombre { font-size: 1.4rem !important; }
+    .logo-slogan { font-size: 1rem !important; }
     .hero-app h1    { font-size: 1.4rem; }
     .section-title  { font-size: 1.6rem; }
-}
-/* =========================================
-   BOTÓN DE TEMA (ICONO CIRCULAR PROFESIONAL)
-   ========================================= */
-.icon-btn {
-    background: rgba(255, 255, 255, 0.1); /* Fondo sutil translúcido */
-    border: 2px solid var(--dorado);      /* Borde dorado de la marca */
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;                   /* Hace que sea un círculo perfecto */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    color: var(--crema);
-    font-size: 1.2rem;                    /* Tamaño del icono */
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-/* Efecto al pasar el mouse */
-.icon-btn:hover {
-    background: var(--dorado);
-    color: var(--cafe);
-    transform: rotate(20deg) scale(1.1);  /* Gira un poco y crece */
-}
-
-/* Efecto al presionar */
-.icon-btn:active {
-    transform: scale(0.9);
-}
-
-/* Cuando está en modo oscuro, el sol se ve dorado */
-body.dark-mode .icon-btn {
-    background: rgba(197, 139, 69, 0.2);
-    color: var(--dorado);
-}
-
-body.dark-mode .icon-btn:hover {
-    background: var(--dorado);
-    color: var(--cafe);
 }
