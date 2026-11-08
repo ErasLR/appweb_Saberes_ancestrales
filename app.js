@@ -39,9 +39,6 @@ async function checkSession() {
         const res = await fetch('api/clientes.php?action=check_session', { credentials: 'include' });
         const text = await res.text();
         
-        // Imprimimos en la consola de F12 por si hay error
-        console.log("Respuesta de check_session:", text);
-
         let data;
         try { data = JSON.parse(text); } 
         catch (err) { return console.error("PHP devolvió esto (No es JSON):", text); }
@@ -81,16 +78,6 @@ function volverAlInicioAuth() {
     document.getElementById('form-register').classList.add('hidden');
 }
 
-function regresarNavegacion() {
-    const formLogin = document.getElementById('form-login');
-    const formRegister = document.getElementById('form-register');
-    if ((formLogin && !formLogin.classList.contains('hidden')) || (formRegister && !formRegister.classList.contains('hidden'))) {
-        volverAlInicioAuth();
-    } else {
-        window.location.href = 'index.html';
-    }
-}
-
 async function loginCliente() {
     const tel = document.getElementById('log-tel').value;
     const pass = document.getElementById('log-pass').value;
@@ -106,10 +93,7 @@ async function loginCliente() {
         const text = await res.text();
         let data;
         try { data = JSON.parse(text); } 
-        catch (err) { 
-            console.error("Respuesta cruda del servidor:", text);
-            return alert("Error crítico en el servidor. Abre la consola (F12) para ver los detalles."); 
-        }
+        catch (err) { return alert("Error en el servidor: " + text.substring(0, 200)); }
 
         if (data.success) { window.location.reload(); } 
         else { alert(data.error || "Error al iniciar sesión"); }
@@ -137,10 +121,7 @@ async function registerCliente() {
         const text = await res.text();
         let data;
         try { data = JSON.parse(text); } 
-        catch (err) { 
-            console.error("Respuesta cruda del servidor:", text);
-            return alert("Error crítico en el servidor. Abre la consola (F12) para ver los detalles."); 
-        }
+        catch (err) { return alert("Error en el servidor: " + text.substring(0, 200)); }
 
         if (data.success) { window.location.reload(); } 
         else { alert(data.error || "Error al registrarse"); }
@@ -364,10 +345,7 @@ async function procesarPago(event) {
         const text = await res.text();
         let data;
         try { data = JSON.parse(text); } 
-        catch (err) { 
-            console.error("Respuesta cruda de pedidos:", text);
-            return alert("Error crítico en el servidor (pedidos). Abre la consola (F12)."); 
-        }
+        catch (err) { return alert("Error en el servidor: " + text.substring(0, 200)); }
 
         if (data.success) {
             generarPDF(metodo, total, telEntrega, direccionCompleta, notasEntrega, data.pedido_id);
