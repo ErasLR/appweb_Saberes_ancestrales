@@ -6,6 +6,17 @@
     <title>Conócenos - Saberes App</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilo rápido para darle sombra y mejor visibilidad a las fotos */
+        .img-conocenos {
+            width: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Sombra para que resalte */
+            border: 2px solid var(--border-color);
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
@@ -35,8 +46,8 @@
 
             <!-- SECCIÓN 2: HISTORIA FAMILIAR -->
             <div class="info-card" style="margin-bottom: 20px;">
-                <!-- Imagen ajustada para no ocupar toda la pantalla -->
-                <img src="https://images.unsplash.com/photo-1598514982205-f36b96d1e8d4" alt="Historia de la Vainilla" style="width:100%; height:160px; object-fit:cover; border-radius:10px; margin-bottom:15px;">
+                <!-- Imagen un poco más alta (200px) y con sombra -->
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwzfvdLH1TzBTT8ViwcJU6wkN2vRgZNaHvNCVM7sRlFg&s=10" alt="Historia de la Vainilla" class="img-conocenos" style="height: 200px;">
                 <h3 style="font-size: 1.2rem;">Una Tradición de Generaciones</h3>
                 <p style="margin-bottom: 10px; text-align: justify; font-size: 0.9rem; line-height: 1.5;">Nuestra historia se remonta a nuestros bisabuelos y abuelos, quienes trabajaron en la época de mayor auge de la vainilla junto a la familia Tremari. De ellos aprendimos el arte del cultivo, la cosecha y el beneficio tradicional para secar las vainas y despertar su aroma.</p>
                 <p style="margin-bottom: 10px; text-align: justify; font-size: 0.9rem; line-height: 1.5;">La segunda generación, integrada por nuestros padres y tíos, continuó la tradición y fundó <strong>Vailipap, Vainilla y Licores de Papantla</strong>, una marca con más de veinte años de trayectoria dedicada a transformar esta joya agrícola en productos únicos.</p>
@@ -88,8 +99,8 @@
             <!-- Sucursal 1: Centro Turístico -->
             <div class="info-card" style="margin-bottom: 20px; border-left: 5px solid var(--dorado); padding: 15px;">
                 <h3 style="font-size: 1.1rem; margin-bottom: 10px;"><i class="fa-solid fa-tree" style="color: var(--verde);"></i> Centro Turístico</h3>
-                <!-- Imagen pequeña -->
-                <img src="https://img.restaurantguru.com/r085-design-Centro-Turistico-Saberes-Ancestrales-de-la-Vainilla-2022-09.jpg" alt="Centro Turístico" style="width:100%; height:120px; object-fit:cover; border-radius:10px; margin-bottom:12px;">
+                <!-- Imagen más alta (160px) -->
+                <img src="https://img.restaurantguru.com/r085-design-Centro-Turistico-Saberes-Ancestrales-de-la-Vainilla-2022-09.jpg" alt="Centro Turístico" class="img-conocenos" style="height: 160px;">
                 <p style="margin: 0 0 15px 0; font-size: 0.85rem; line-height: 1.4;">Aquí encontrarás los sembradíos demostrativos, el museo histórico, los talleres artesanales y un hermoso mirador.</p>
                 
                 <a href="https://maps.app.goo.gl/7oVFk2wfuPodurtj6" target="_blank" rel="noopener noreferrer" class="btn btn-primary full-width" style="text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.9rem; padding: 10px;">
@@ -100,11 +111,10 @@
             <!-- Sucursal 2: Restaurante -->
             <div class="info-card" style="margin-bottom: 20px; border-left: 5px solid var(--dorado); padding: 15px;">
                 <h3 style="font-size: 1.1rem; margin-bottom: 10px;"><i class="fa-solid fa-utensils" style="color: var(--dorado);"></i> Restaurante</h3>
-                <!-- Imagen pequeña -->
-                <img src="https://images.unsplash.com/photo-1600891964092-4316c288032e" alt="Restaurante" style="width:100%; height:120px; object-fit:cover; border-radius:10px; margin-bottom:12px;">
+                <!-- Imagen más alta (160px) -->
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_yNnZ3Bwen6vySOdE4tG2aaPSbmkBBdI9GcRNLlF7XfSuHzixDFV2ieHK&s=10" alt="Restaurante" class="img-conocenos" style="height: 160px;">
                 <p style="margin: 0 0 15px 0; font-size: 0.85rem; line-height: 1.4;">El lugar perfecto para disfrutar de nuestra gastronomía tradicional elaborada con la vainilla que cultivamos en casa.</p>
                 
-                <!-- OJO: Aquí puse el mismo link que me diste, si es otro lugar, cámbialo -->
                 <a href="https://maps.app.goo.gl/7oVFk2wfuPodurtj6" target="_blank" rel="noopener noreferrer" class="btn btn-secondary full-width" style="text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.9rem; padding: 10px;">
                     <i class="fa-solid fa-map-location-dot"></i> Abrir en Google Maps
                 </a>
