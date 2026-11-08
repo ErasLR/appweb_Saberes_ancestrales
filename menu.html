@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Menú - Saberes App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Librería para generar el PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo-area" onclick="window.location.href='index.html'">
+                <img src="logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/75/C58B45/FFFFFF?text=S'">
+                <div class="logo-texto">
+                    <!-- QUITAMOS EL STYLE EN LÍNEA Y PONEMOS LA CLASE -->
+                    <span class="logo-nombre">Saberes Ancestrales</span>
+                    <span class="logo-slogan">de la Vainilla</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="toggleTheme()" id="theme-btn"><i class="fa-solid fa-moon"></i></button>
+            </div>
+        </header>
+
+        <main class="app-content">
+            <h2 class="section-title">Menú Oficial</h2>
+            
+            <!-- Filtros de categorías -->
+            <div class="filtros-scroll">
+                <button class="chip active" onclick="filtrarMenu('Todas', this)">Todas</button>
+                <button class="chip" onclick="filtrarMenu('Especialidades', this)">Especialidades</button>
+                <button class="chip" onclick="filtrarMenu('Mariscos', this)">Mariscos</button>
+                <button class="chip" onclick="filtrarMenu('Tradicional', this)">Tradicional</button>
+                <button class="chip" onclick="filtrarMenu('Postres', this)">Postres</button>
+                <button class="chip" onclick="filtrarMenu('Bebidas', this)">Bebidas</button>
+            </div>
+            
+            <!-- Aquí se inyectan los platillos -->
+            <div id="contenedor-menu" class="grid-menu"></div>
+            
+            <!-- Botón flotante del carrito -->
+            <button class="floating-cart-btn" onclick="abrirCarrito()">
+                <i class="fa-solid fa-cart-shopping"></i> <span id="cart-count">0</span>
+            </button>
+        </main>
+
+        <!-- Navegación inferior -->
+        <nav class="bottom-nav">
+            <a href="index.html" class="nav-item"><span class="icon"><i class="fa-solid fa-house"></i></span><span class="label">Inicio</span></a>
+            <a href="menu.html" class="nav-item active"><span class="icon"><i class="fa-solid fa-utensils"></i></span><span class="label">Menú</span></a>
+            <a href="conocenos.html" class="nav-item"><span class="icon"><i class="fa-solid fa-leaf"></i></span><span class="label">Conócenos</span></a>
+            <a href="login.html" class="nav-item"><span class="icon"><i class="fa-solid fa-user"></i></span><span class="label">Mi Cuenta</span></a>
+        </nav>
+    </div>
+
+    <!-- MODAL DE INGREDIENTES (Hielo, cebolla, etc.) -->
+    <div id="custom-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 id="custom-title">Personalizar Platillo</h3>
+            <div id="custom-options" class="custom-options-container"></div>
+            <button class="btn btn-primary full-width mt-10" onclick="confirmarCustomizacion()">Agregar al Carrito</button>
+            <button class="btn btn-secondary full-width mt-10" onclick="document.getElementById('custom-modal').classList.add('hidden')">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL DEL CARRITO Y PAGO -->
+    <div id="cart-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>Tu Pedido</h3>
+            <div id="cart-items" class="cart-items-list"></div>
+            <hr>
+            <h3 id="cart-total">Total: $0.00</h3>
+            
+            <!-- PASO 1: DATOS DE ENTREGA Y MÉTODO DE PAGO -->
+            <div id="payment-step-1">
+                <h4 style="margin-top:15px; color:var(--cafe); font-size:1.1rem;">Datos de Entrega</h4>
+                <div class="input-group">
+                    <label>Teléfono de contacto</label>
+                    <input type="tel" id="del-tel" required>
+                </div>
+                <div class="input-group">
+                    <label>Dirección (Calle, Número, Colonia)</label>
+                    <input type="text" id="del-dir" required>
+                </div>
+                <div class="input-group">
+                    <label>Especificaciones para el repartidor</label>
+                    <textarea id="del-notas" rows="2" placeholder="Ej. Casa de dos pisos, portón negro..."></textarea>
+                </div>
+
+                <hr style="margin: 15px 0; border: 1px dashed var(--border-color);">
+
+                <div class="input-group">
+                    <label>Método de pago</label>
+                    <select id="payment-method" class="payment-select">
+                        <option value="Efectivo">Efectivo (Pagar al repartidor)</option>
+                        <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                        <option value="Tarjeta de Débito">Tarjeta de Débito</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary full-width" onclick="irAPago()">Continuar al Pago</button>
+                <button class="btn btn-secondary full-width mt-10" onclick="cerrarCarrito()">Seguir pidiendo</button>
+            </div>
+
+            <!-- PASO 2: FORMULARIO DE TARJETA -->
+            <div id="payment-step-card" class="hidden">
+                <h3 id="card-form-title"><i class="fa-solid fa-credit-card"></i> Datos de Tarjeta</h3>
+                <div class="input-group"><label>Nombre en la tarjeta</label><input type="text" id="card-name" placeholder="Como aparece en la tarjeta"></div>
+                <div class="input-group"><label>Número de tarjeta</label><input type="text" id="card-number" placeholder="0000 0000 0000 0000" maxlength="19"></div>
+                <div class="row">
+                    <div class="input-group"><label>MM/AA</label><input type="text" id="card-expiry" placeholder="MM/AA" maxlength="5"></div>
+                    <div class="input-group"><label>CVV</label><input type="password" id="card-cvv" placeholder="123" maxlength="4"></div>
+                </div>
+                <button class="btn btn-primary full-width" onclick="procesarPago(event)">Pagar Ahora</button>
+                <button class="btn btn-secondary full-width mt-10" onclick="volverAPaso1()">Regresar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DEL TICKET (PDF) -->
+    <div id="ticket-modal" class="modal-overlay hidden">
+        <div class="modal-content" style="text-align:center;">
+            <h3 style="color:var(--verde);"><i class="fa-solid fa-circle-check"></i> ¡Pago Exitoso!</h3>
+            <p>Tu comprobante se está descargando.</p>
+            
+            <!-- DISEÑO DEL TICKET PDF -->
+            <div id="ticket-pdf-area" style="display:none; padding:20px; background:white; color:black; width:300px; margin:0 auto; text-align:left; font-family: Arial, sans-serif;">
+                <h2 style="font-family:Georgia; text-align:center; margin-bottom:5px;">Saberes Artesanales</h2>
+                <p style="text-align:center; font-size:10px; margin-bottom:15px;">de la Vainilla</p>
+                
+                <hr style="margin:10px 0; border-top: 1px dashed #000;">
+                <p><strong>Folio:</strong> <span id="ticket-folio"></span></p>
+                <p><strong>Fecha:</strong> <span id="ticket-fecha"></span></p>
+                <p><strong>Cliente:</strong> <span id="ticket-nombre"></span></p>
+                <p><strong>Teléfono:</strong> <span id="ticket-tel"></span></p>
+                <p><strong>Dirección:</strong> <span id="ticket-dir"></span></p>
+                <p><strong>Método de Pago:</strong> <span id="ticket-metodo"></span></p>
+                <hr style="margin:10px 0; border-top: 1px dashed #000;">
+                
+                <div id="ticket-items" style="font-size:12px; margin-bottom: 10px;"></div>
+                
+                <hr style="margin:10px 0; border-top: 1px dashed #000;">
+                <h3 style="text-align:right;">Total Pagado: <span id="ticket-total"></span></h3>
+                
+                <!-- MENSAJE PERSONALIZADO -->
+                <div style="text-align:center; margin-top: 25px;">
+                    <p style="font-size:12px; font-style:italic;">"El aroma de nuestra historia, el sabor de nuestra tradición."</p>
+                    <p style="font-size:14px; font-weight:bold; margin-top:10px;">¡Gracias por tu preferencia, <span id="ticket-gracias-nombre"></span>!</p>
+                    <p style="font-size:10px; margin-top:10px;">Conserva este ticket como comprobante de tu pedido.</p>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary full-width mt-10" onclick="window.location.href='index.html'">Volver al Inicio</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

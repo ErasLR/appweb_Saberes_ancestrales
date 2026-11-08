@@ -1,0 +1,658 @@
+/* =========================================
+   RESTAURANTE APP — ESTILOS RESPONSIVOS
+   Compatible: Celular / Tablet / Laptop / PC
+   ========================================= */
+
+/* =========================================
+   1. VARIABLES
+   ========================================= */
+:root {
+    /* ---------- 🎨 COLORES ---------- */
+    --bg-body:      #e5e5e5;
+    --bg-app:       #F5EBD7;
+    --bg-card:      #FFFFFF;
+    --texto-main:   #333333;
+    --texto-muted:  #666666;
+    --cafe:         #4A3025;
+    --crema:        #F5EBD7;
+    --verde:        #7A8B52;
+    --dorado:       #C58B45;
+    --border-color: #e0e0e0;
+    --shadow:       0 4px 12px rgba(0,0,0,0.08);
+
+    /* =========================================
+       🖼️ TAMAÑOS DEL LOGO (+150%)
+       ========================================= */
+    --logo-celular:         75px;  
+    --logo-tablet:          98px;  
+    --logo-laptop:          117px; 
+    --logo-pantalla-grande: 135px; 
+
+    /* ---------- 📏 MEDIDAS GLOBALES ---------- */
+    --app-padding:   20px;
+    --nav-height:    70px;
+    --radius:        15px;
+    --radius-grande: 20px;
+}
+
+body.dark-mode {
+    /* Fondo general de la app: Un café casi negro, muy elegante */
+    --bg-app:       #12100E; 
+    
+    /* Fondo de las tarjetas y modales: Café oscuro para resaltar */
+    --bg-card:      #1F1916; 
+    
+    /* Texto principal: El color crema de tu marca para que resalte perfecto */
+    --texto-main:   #F5EBD7; 
+    
+    /* Texto secundario (descripciones, textos pequeños): Un tono más apagado pero visible */
+    --texto-muted:  #A39A91; 
+    
+    /* Cabecera superior y botones: Café oscuro */
+    --cafe:         #2D211A; 
+    
+    /* Texto de la cabecera (Logo, Slogan, Iconos): Crema brillante para que se lea perfecto */
+    --crema:        #F5EBD7; 
+    
+    /* Bordes: Sutilmente oscuros */
+    --border-color: #3A2F29; 
+    
+    /* Sombra: Más pronunciada para dar profundidad en modo oscuro */
+    --shadow:       0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* =========================================
+   2. RESET Y ESTRUCTURA
+   ========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html { height: 100%; }
+
+body {
+    background-color: var(--bg-body);
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    transition: background-color 0.3s;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    background-color: var(--bg-app);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    color: var(--texto-main);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* =========================================
+   3. CABECERA (APP BAR)
+   ========================================= */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: var(--cafe);
+    color: var(--crema);
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+}
+
+.logo-area img {
+    width:  var(--logo-celular);
+    height: var(--logo-celular);
+    border-radius: 50%;
+    border: 2px solid var(--dorado);
+    background: white;
+    object-fit: cover;
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+/* =========================================
+   TEXTO DEL LOGO AL 120% (Corregido)
+   ========================================= */
+.logo-nombre {
+    font-family: Georgia, serif;
+    font-size: 1.68rem !important; /* Aumento del 120% */
+    font-weight: bold !important;
+    color: var(--crema) !important;
+    line-height: 1.1 !important;
+    display: block !important;
+}
+
+.logo-slogan {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 1.2rem !important; /* Aumento del 120% */
+    color: var(--dorado) !important;
+    margin-top: 5px;
+    display: block !important;
+}
+
+/* Ajustes para pantallas grandes (PC) */
+@media (min-width: 1024px) {
+    .logo-nombre { font-size: 2.4rem !important; } 
+    .logo-slogan { font-size: 1.8rem !important; }
+}
+/* =========================================
+   4. CONTENIDO
+   ========================================= */
+.app-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: var(--app-padding);
+    padding-bottom: calc(var(--nav-height) + 20px);
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+.section-title {
+    font-family: Georgia, serif;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: var(--cafe);
+    text-align: center;
+}
+
+/* =========================================
+   5. HERO (INICIO) - IMAGEN CORREGIDA
+   ========================================= */
+.hero-app {
+    background-image:
+        linear-gradient(rgba(74, 48, 37, 0.9), rgba(74, 48, 37, 0.9)),
+        url('https://jardindelzen.com/wp-content/uploads/2016/12/vainilla-1024x768.jpg'); /* URL corregida sin espacios */
+    background-size: cover;
+    background-position: center;
+    border-radius: var(--radius-grande);
+    padding: 40px 20px;
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.hero-app h1 {
+    font-family: Georgia, serif;
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    color: var(--crema);
+}
+
+.hero-app p { color: var(--dorado); margin-bottom: 20px; font-size: 0.95rem; }
+
+.info-card {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+.info-card h3 { color: var(--cafe); margin-bottom: 10px; }
+
+/* =========================================
+   6. MENÚ Y TARJETAS
+   ========================================= */
+.filtros-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    scrollbar-width: none;
+}
+.filtros-scroll::-webkit-scrollbar { display: none; }
+
+.chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--texto-main);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.chip.active { background: var(--dorado); color: #000; border-color: var(--dorado); }
+
+.grid-menu { display: grid; grid-template-columns: 1fr; gap: 15px; }
+
+.card-food {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card-food:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
+.card-food img { width: 100%; height: 160px; object-fit: cover; }
+.card-food-body { padding: 15px; }
+.card-food-body h3 { font-size: 1.1rem; margin-bottom: 5px; color: var(--cafe); }
+.card-food-body p { font-size: 0.85rem; color: var(--texto-muted); margin-bottom: 10px; }
+.card-food-price { font-weight: bold; color: var(--verde); font-size: 1.2rem; margin-bottom: 10px; display: block; }
+
+.add-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--cafe);
+    color: var(--bg-app);
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.add-btn:active { transform: scale(0.95); }
+
+/* =========================================
+   7. BOTÓN FLOTANTE
+   ========================================= */
+.floating-cart-btn {
+    position: absolute;
+    bottom: calc(var(--nav-height) + 10px);
+    right: 20px;
+    background: var(--dorado);
+    color: #000;
+    border: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 15px rgba(197, 139, 69, 0.4);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    transition: 0.2s;
+}
+.floating-cart-btn:active { transform: scale(0.9); }
+.floating-cart-btn span {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: red;
+    color: white;
+    font-size: 0.8rem;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+/* =========================================
+   8. FORMULARIOS
+   ========================================= */
+.form-app {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.input-group { margin-bottom: 15px; }
+.input-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: 600; color: var(--cafe); }
+
+.input-group input, .input-group select, .input-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--bg-app);
+    color: var(--texto-main);
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s;
+}
+.input-group input:focus { border-color: var(--dorado); }
+
+.row { display: flex; gap: 10px; }
+.row .input-group { flex: 1; }
+
+/* =========================================
+   9. BOTONES GENERALES
+   ========================================= */
+.btn {
+    padding: 12px 20px;
+    border-radius: 30px;
+    border: none;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+    text-align: center;
+}
+.btn-primary { background: var(--dorado); color: #000; }
+.btn-secondary { background: var(--verde); color: white; }
+.full-width { width: 100%; }
+.mt-10 { margin-top: 10px; }
+.btn:active { transform: scale(0.95); }
+
+/* =========================================
+   10. NAVEGACIÓN INFERIOR
+   ========================================= */
+.bottom-nav {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: var(--bg-card);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid var(--border-color);
+    z-index: 10;
+    min-height: var(--nav-height);
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--texto-muted);
+    cursor: pointer;
+    transition: 0.2s;
+    width: 25%;
+    text-decoration: none;
+}
+.nav-item .icon { font-size: 1.3rem; margin-bottom: 3px; }
+.nav-item .label { font-size: 0.75rem; font-weight: 600; }
+.nav-item.active { color: var(--dorado); }
+.nav-item.active .icon { transform: translateY(-2px); }
+
+/* =========================================
+   11. MODALES
+   ========================================= */
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+.modal-overlay.hidden { opacity: 0; pointer-events: none; }
+
+.modal-content {
+    background: var(--bg-card);
+    width: 100%;
+    padding: 25px;
+    border-radius: 20px 20px 0 0;
+    max-height: 85%;
+    overflow-y: auto;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+    transform: translateY(0);
+    transition: transform 0.3s;
+}
+.modal-overlay.hidden .modal-content { transform: translateY(100%); }
+.modal-content h3 { margin-bottom: 15px; color: var(--cafe); }
+.hidden { display: none !important; }
+
+/* =========================================
+   12. ALERTAS
+   ========================================= */
+.alerta {
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+.alerta.success { background: #d4edda; color: #155724; }
+.alerta.error   { background: #f8d7da; color: #721c24; }
+
+/* =========================================
+   13. CARRITO
+   ========================================= */
+.cart-items-list { margin-bottom: 15px; max-height: 250px; overflow-y: auto; }
+
+.cart-item {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 0;
+}
+.cart-item:last-child { border-bottom: none; }
+
+.cart-item-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: var(--texto-main);
+    font-weight: 500;
+}
+
+.cart-item-controls { display: flex; align-items: center; gap: 10px; }
+
+.qty-btn {
+    background: var(--bg-app);
+    border: 1px solid var(--border-color);
+    color: var(--texto-main);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s;
+}
+.qty-btn:active { background: var(--dorado); transform: scale(0.9); }
+
+.qty-number { font-weight: bold; width: 24px; text-align: center; color: var(--cafe); }
+
+.delete-btn {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-left: auto;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    color: var(--texto-muted);
+}
+.delete-btn:hover, .delete-btn:active { opacity: 1; color: #ff4d4d; }
+
+.btn-added { background-color: var(--verde) !important; color: white !important; }
+
+/* =========================================
+   14. PERSONALIZACIÓN
+   ========================================= */
+.custom-options-container { margin-bottom: 20px; }
+.custom-group {
+    margin-bottom: 15px;
+    background: var(--bg-app);
+    padding: 10px;
+    border-radius: 10px;
+}
+.custom-group p { margin-bottom: 10px; font-size: 0.95rem; color: var(--cafe); }
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+.radio-label input { accent-color: var(--dorado); width: 18px; height: 18px; }
+
+/* =========================================
+   15. CHECKOUT Y PDF
+   ========================================= */
+#auth-guest .btn { width: auto; padding: 10px 15px; font-size: 0.9rem; }
+#auth-guest form { margin-top: 20px; }
+
+.payment-select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-app);
+    color: var(--texto-main);
+    font-size: 1rem;
+    margin-bottom: 15px;
+    outline: none;
+}
+
+#payment-step-card h3 { margin-bottom: 15px; color: var(--cafe); font-size: 1.2rem; }
+#payment-step-card input { background: var(--bg-app); border: 1px solid var(--border-color); color: var(--texto-main); }
+#ticket-modal .modal-content { text-align: center; }
+
+#ticket-pdf-area { font-family: Arial, sans-serif; background: white; color: black; }
+#ticket-pdf-area h2 { font-family: Georgia, serif; margin-bottom: 10px; }
+#ticket-pdf-area p { margin: 5px 0; font-size: 14px; }
+#ticket-pdf-area hr { border-top: 1px dashed #000; }
+#ticket-items p { margin: 2px 0; font-size: 12px; }
+
+body.dark-mode .icon-btn i { color: var(--dorado); }
+
+/* =========================================
+   16. 📱 TABLET (Ajustes de 150%)
+   ========================================= */
+@media (min-width: 600px) {
+    :root { --app-padding: 25px; --nav-height: 75px; }
+    
+    .logo-area img { width: var(--logo-tablet); height: var(--logo-tablet); }
+    .logo-texto span:first-child { font-size: 2.8rem; } /* 150% más en tablet */
+    .logo-slogan { font-size: 1.8rem; }
+    .app-header { padding: 18px 25px; min-height: 125px; }
+    
+    .grid-menu { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .hero-app { padding: 55px 30px; }
+    .hero-app h1 { font-size: 1.9rem; }
+    .hero-app p  { font-size: 1rem; }
+    .section-title { font-size: 2rem; }
+    .bottom-nav { justify-content: center; gap: 50px; padding: 12px 20px; }
+    .nav-item { width: auto; min-width: 80px; }
+    .nav-item .icon  { font-size: 1.4rem; }
+    .nav-item .label { font-size: 0.8rem; }
+    .modal-overlay { align-items: center; padding: 20px; }
+    .modal-content { max-width: 600px; border-radius: var(--radius-grande); max-height: 90%; }
+    .modal-overlay.hidden .modal-content { transform: translateY(20px) scale(0.95); }
+}
+
+/* =========================================
+   17. 💻 LAPTOP / DESKTOP
+   ========================================= */
+@media (min-width: 1024px) {
+    :root { --app-padding: 30px; --nav-height: 80px; }
+    
+    .app-container { max-width: 1400px; box-shadow: 0 0 40px rgba(0,0,0,0.15); }
+    .logo-area img { width: var(--logo-laptop); height: var(--logo-laptop); }
+    .logo-texto span:first-child { font-size: 3.2rem; } /* 150% más en PC */
+    .logo-slogan { font-size: 2.2rem; }
+    .app-header { padding: 22px 35px; min-height: 155px; }
+    
+    .grid-menu { grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    .hero-app { padding: 70px 50px; border-radius: 24px; }
+    .hero-app h1 { font-size: 2.2rem; }
+    .hero-app p  { font-size: 1.1rem; }
+    .section-title { font-size: 2.3rem; margin-bottom: 28px; }
+    .card-food img { height: 180px; }
+    .filtros-scroll { justify-content: center; padding-bottom: 20px; }
+    .form-app { padding: 30px; }
+}
+
+/* =========================================
+   18. 🖥️ PANTALLAS MUY GRANDES
+   ========================================= */
+@media (min-width: 1400px) {
+    :root { --app-padding: 40px; }
+    
+    .logo-area img { width: var(--logo-pantalla-grande); height: var(--logo-pantalla-grande); }
+    .logo-texto span:first-child { font-size: 3.8rem; } 
+    .logo-slogan { font-size: 2.5rem; }
+    .app-header { padding: 24px 45px; min-height: 175px; }
+    
+    .grid-menu { grid-template-columns: repeat(4, 1fr); }
+    .hero-app { padding: 80px 60px; }
+    .hero-app h1 { font-size: 2.5rem; }
+}
+
+/* =========================================
+   19. 📱 CELULARES PEQUEÑOS
+   ========================================= */
+@media (max-width: 360px) {
+    :root { --logo-celular: 65px; --app-padding: 15px; }
+    .logo-texto span:first-child { font-size: 1.8rem; } /* Ajuste para que no se rompa */
+    .logo-slogan { font-size: 1.2rem; }
+    .hero-app h1    { font-size: 1.4rem; }
+    .section-title  { font-size: 1.6rem; }
+}
+/* =========================================
+   BOTÓN DE TEMA (ICONO CIRCULAR PROFESIONAL)
+   ========================================= */
+.icon-btn {
+    background: rgba(255, 255, 255, 0.1); /* Fondo sutil translúcido */
+    border: 2px solid var(--dorado);      /* Borde dorado de la marca */
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;                   /* Hace que sea un círculo perfecto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: var(--crema);
+    font-size: 1.2rem;                    /* Tamaño del icono */
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Efecto al pasar el mouse */
+.icon-btn:hover {
+    background: var(--dorado);
+    color: var(--cafe);
+    transform: rotate(20deg) scale(1.1);  /* Gira un poco y crece */
+}
+
+/* Efecto al presionar */
+.icon-btn:active {
+    transform: scale(0.9);
+}
+
+/* Cuando está en modo oscuro, el sol se ve dorado */
+body.dark-mode .icon-btn {
+    background: rgba(197, 139, 69, 0.2);
+    color: var(--dorado);
+}
+
+body.dark-mode .icon-btn:hover {
+    background: var(--dorado);
+    color: var(--cafe);
+}

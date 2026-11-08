@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mi Cuenta - Saberes App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo-area" onclick="window.location.href='index.html'">
+                <img src="logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/75/C58B45/FFFFFF?text=S'">
+                <div class="logo-texto">
+                    <!-- QUITAMOS EL STYLE EN LÍNEA Y PONEMOS LA CLASE -->
+                    <span class="logo-nombre">Saberes Ancestrales</span>
+                    <span class="logo-slogan">de la Vainilla</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="toggleTheme()" id="theme-btn"><i class="fa-solid fa-moon"></i></button>
+            </div>
+        </header>
+        
+        <main class="app-content">
+            <!-- CONTENEDOR PARA INVITADOS -->
+            <div id="auth-guest" class="form-app">
+                <!-- Botones para cambiar de formulario -->
+                <div style="display:flex; gap:10px; margin-bottom:20px;">
+                    <button class="btn btn-primary" style="flex:1;" onclick="mostrarForm('login')">Iniciar sesion</button>
+                    <button class="btn btn-secondary" style="flex:1;" onclick="mostrarForm('register')">Crear Cuenta</button>
+                </div>
+
+                <!-- Formulario de Login -->
+                <form id="form-login" onsubmit="event.preventDefault(); loginCliente();">
+                    <div class="input-group"><label>Teléfono</label><input type="tel" id="log-tel" required placeholder="Ej. 7841234567"></div>
+                    <div class="input-group"><label>Contraseña</label><input type="password" id="log-pass" required></div>
+                    <button type="submit" class="btn btn-primary full-width">Entrar</button>
+                </form>
+
+                <!-- Formulario de Registro -->
+                <form id="form-register" class="hidden" onsubmit="event.preventDefault(); registerCliente();">
+                    <div class="input-group"><label>Nombre Completo</label><input type="text" id="reg-nombre" required></div>
+                    <div class="input-group"><label>Teléfono</label><input type="tel" id="reg-tel" required></div>
+                    <div class="input-group"><label>Contraseña</label><input type="password" id="reg-pass" required></div>
+                    <div class="input-group"><label>Dirección (Calle,Colonia)</label><input type="text" id="reg-calle" required></div>
+                    <div class="row">
+                        <div class="input-group"><label>Número Ext</label><input type="text" id="reg-num" required></div>
+                        <div class="input-group"><label>Interior (Opc.)</label><input type="text" id="reg-int"></div>
+                    </div>
+                    <div class="input-group"><label>Referencias (Para el repartidor)</label><textarea id="reg-ref" rows="2" placeholder="Ej. Casa de dos pisos, portón negro..."></textarea></div>
+                    <button type="submit" class="btn btn-primary full-width">Registrarme</button>
+                </form>
+            </div>
+
+            <!-- PANEL DE USUARIO LOGUEADO -->
+            <div id="auth-user" class="form-app hidden" style="text-align:center;">
+                <h3>Hola, <span id="user-name-display"></span></h3>
+                <p>¿Qué deseas hacer hoy?</p>
+                <button class="btn btn-primary full-width mt-10" onclick="window.location.href='menu.html'">Pedir Comida</button>
+                <button class="btn btn-secondary full-width mt-10" onclick="cerrarSesionCliente()">Cerrar Sesión</button>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="index.html" class="nav-item"><span class="icon"><i class="fa-solid fa-house"></i></span><span class="label">Inicio</span></a>
+            <a href="menu.html" class="nav-item"><span class="icon"><i class="fa-solid fa-utensils"></i></span><span class="label">Menú</span></a>
+            <a href="conocenos.html" class="nav-item"><span class="icon"><i class="fa-solid fa-leaf"></i></span><span class="label">Conócenos</span></a>
+            <a href="login.html" class="nav-item active"><span class="icon"><i class="fa-solid fa-user"></i></span><span class="label">Mi Cuenta</span></a>
+        </nav>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
