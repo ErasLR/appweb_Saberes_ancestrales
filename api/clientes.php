@@ -1,67 +1,73 @@
 <?php
-// 1. Iniciar sesión y configurar cabeceras
+// Activar errores para saber exactamente qué falla (los desactivaremos después)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 header('Content-Type: application/json; charset=utf-8');
-error_reporting(0); // Ocultar advertencias para no romper el JSON
 
 require 'conexion.php';
 $link = Conectarse();
 
+if (!$link) {
+    die(json_encode(["error" => "Error de conexión a MySQL."]));
+}
+
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
-// 2. REGISTRO DE NUEVOS USUARIOS
+// 1. REGISTRO
 if ($action === 'register') {
     $data = json_decode(file_get_contents('php://input'), true);
     
-    // Validar que lleguen los datos
-    if (!$data || empty($data['telefono']) || empty($data['password'])) {
-        echo json_encode(["error" => "Faltan datos obligatorios."]); exit;
+    if (!$data) {
+        echo json_encode(["error" => "No se recibieron datos."]); exit;
     }
 
-    $nombre = mysqli_real_escape_string($link, $data['nombre']);
-    $telefono = mysqli_real_escape_string($link, $data['telefono']);
-    $pass = $data['password'];
-    $calle = mysqli_real_escape_string($link, $data['calle']);
-    $numero = mysqli_real_escape_string($link, $data['numero']);
-    $interior = mysqli_real_escape_string($link, $data['interior']);
-    $referencias = mysqli_real_escape_string($link, $data['referencias']);
+    $nombre = isset($data['nombre']) ? mysqli_real_escape_string($link, $data['nombre']) : '';
+    $telefono = isset($data['telefono']) ? mysqli_real_escape_string($link, $data['telefono']) : '';
+    $pass = isset($data['password']) ? $data['password'] : '';
+    
+    $calle_colonia = isset($data['calle']) ? mysqli_real_escape_string($link, $data['calle']) : ''; 
+    $numero = isset($data['numero']) ? mysqli_real_escape_string($link, $data['numero']) : '';
+    $interior = isset($data['interior']) ? mysqli_real_escape_string($link, $data['interior']) : '';
+    $referencias = isset($data['referencias']) ? mysqli_real_escape_string($link, $data['referencias']) : '';
 
-    // Verificar si el teléfono ya existe
+    if (empty($telefono) || empty($pass) || empty($numero) || empty($calle_colonia)) {
+        echo json_encode(["error" => "Faltan datos obligatorios (Teléfono, Contraseña, Calle, Número)."]); exit;
+    }
+
     $check = mysqli_query($link, "SELECT id FROM clientes WHERE telefono = '$telefono'");
-    if ($check && mysqli_num_rows($check) > 0) {
-        echo json_encode(["error" => "Este número de teléfono ya está registrado."]); 
-        exit;
+    if (mysqli_num_rows($check) > 0) {
+        echo json_encode(["error" => "Este teléfono ya está registrado."]); exit;
     }
 
-    // Encriptar contraseña (Compatible con PHP viejo)
+    // COMPATIBILIDAD CON PHP VIEJO
     if (function_exists('password_hash')) {
         $pass_encriptada = password_hash($pass, PASSWORD_DEFAULT);
     } else {
-        // Respaldo por si el Wamp es muy viejo
-        $pass_encriptada = md5($pass); 
+        $pass_encriptada = md5($pass); // Respaldo para versiones antiguas
     }
 
-    // Insertar en la base de datos
-    $query = "INSERT INTO clientes (nombre, telefono, password, calle, numero, interior, referencias) 
-              VALUES ('$nombre', '$telefono', '$pass_encriptada', '$calle', '$numero', '$interior', '$referencias')";
+    $query = "INSERT INTO clientes (nombre, telefono, password, calle_colonia, numero, interior, referencias) 
+              VALUES ('$nombre', '$telefono', '$pass_encriptada', '$calle_colonia', '$numero', '$interior', '$referencias')";
     
     if (mysqli_query($link, $query)) {
-        // Iniciar sesión automáticamente
         $_SESSION['cliente_id'] = mysqli_insert_id($link);
         $_SESSION['cliente_nombre'] = $nombre;
         echo json_encode(["success" => true, "nombre" => $nombre]);
     } else {
-        // Si falla el SQL, devolvemos el error exacto
-        echo json_encode(["error" => "Error de Base de Datos: " . mysqli_error($link)]);
+        echo json_encode(["error" => "Error SQL al insertar: " . mysqli_error($link)]);
     }
     exit;
 }
 
-// 3. INICIAR SESIÓN
+// 2. LOGIN
 if ($action === 'login') {
     $data = json_decode(file_get_contents('php://input'), true);
-    $telefono = mysqli_real_escape_string($link, $data['telefono']);
-    $pass = $data['password'];
+    
+    $telefono = isset($data['telefono']) ? mysqli_real_escape_string($link, $data['telefono']) : '';
+    $pass = isset($data['password']) ? $data['password'] : '';
 
     $query = "SELECT * FROM clientes WHERE telefono = '$telefono'";
     $resultado = mysqli_query($link, $query);
@@ -70,11 +76,10 @@ if ($action === 'login') {
         $row = mysqli_fetch_assoc($resultado);
         
         $login_exitoso = false;
-        // Verificar contraseña moderna
         if (function_exists('password_verify')) {
             $login_exitoso = password_verify($pass, $row['password']);
         }
-        // Respaldo para contraseñas viejas o md5
+        // Si falló el verify (porque es un hash md5 viejo)
         if (!$login_exitoso && md5($pass) === $row['password']) {
             $login_exitoso = true;
         }
@@ -90,19 +95,18 @@ if ($action === 'login') {
     exit;
 }
 
-// 4. VERIFICAR SESIÓN
+// 3. VERIFICAR SESIÓN
 if ($action === 'check_session') {
     if (isset($_SESSION['cliente_id'])) {
         $id = $_SESSION['cliente_id'];
         $res = mysqli_query($link, "SELECT * FROM clientes WHERE id = $id");
         $user = mysqli_fetch_assoc($res);
-        
         if($user) {
             echo json_encode([
                 "logged_in" => true, 
                 "nombre" => $user['nombre'],
                 "telefono" => $user['telefono'],
-                "calle" => $user['calle'],
+                "calle_colonia" => $user['calle_colonia'], 
                 "numero" => $user['numero'],
                 "interior" => $user['interior'],
                 "referencias" => $user['referencias']
@@ -116,7 +120,7 @@ if ($action === 'check_session') {
     exit;
 }
 
-// 5. CERRAR SESIÓN
+// 4. LOGOUT
 if ($action === 'logout') {
     session_destroy();
     echo json_encode(["success" => true]); 
