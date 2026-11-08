@@ -9,11 +9,9 @@
 </head>
 <body>
     <div class="app-container">
+        <!-- CABECERA LIMPIA (Sin botón de regresar) -->
         <header class="app-header">
             <div class="logo-area">
-                <button class="icon-btn" onclick="regresarNavegacion()" style="margin-right: 10px; width: 40px; height: 40px; font-size: 1.1rem; border-color: transparent; background: rgba(255,255,255,0.1);">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </button>
                 <img src="logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/75/C58B45/FFFFFF?text=S'">
                 <div class="logo-texto" onclick="window.location.href='index.html'" style="cursor: pointer;">
                     <span class="logo-nombre">Saberes Ancestrales</span>
@@ -27,6 +25,7 @@
         
         <main class="app-content">
             <div id="auth-guest">
+                <!-- VISTA DE LAS TARJETAS INICIALES -->
                 <div id="auth-initial-view">
                     <div class="auth-card-brown">
                         <div class="auth-icon-circle"><i class="fa-solid fa-user-plus"></i></div>
@@ -43,26 +42,25 @@
                     </div>
                 </div>
 
+                <!-- FORMULARIO DE LOGIN -->
                 <div id="form-login" class="auth-form-container hidden">
-                    <div class="auth-form-header">
-                        <button class="btn-back" onclick="volverAlInicioAuth()"><i class="fa-solid fa-arrow-left"></i></button>
-                        <h3>Iniciar Sesión</h3>
-                        <div class="spacer"></div>
-                    </div>
+                    <h3 style="text-align: center; margin-bottom: 25px; color: var(--cafe); font-family: Georgia, serif; font-size: 1.5rem;">Iniciar Sesión</h3>
                     
                     <form onsubmit="event.preventDefault(); loginCliente();">
                         <div class="input-group"><label>Teléfono</label><input type="tel" id="log-tel" required placeholder="Ej. 7841234567"></div>
                         <div class="input-group"><label>Contraseña</label><input type="password" id="log-pass" required></div>
                         <button type="submit" class="btn btn-primary full-width mt-10">Entrar</button>
                     </form>
+
+                    <!-- Enlace de texto para regresar -->
+                    <p style="text-align: center; margin-top: 20px; font-size: 0.95rem; cursor: pointer; color: var(--dorado); font-weight: bold;" onclick="volverAlInicioAuth()">
+                        <i class="fa-solid fa-arrow-left"></i> Regresar a opciones
+                    </p>
                 </div>
 
+                <!-- FORMULARIO DE REGISTRO -->
                 <div id="form-register" class="auth-form-container hidden">
-                    <div class="auth-form-header">
-                        <button class="btn-back" onclick="volverAlInicioAuth()"><i class="fa-solid fa-arrow-left"></i></button>
-                        <h3>Crear Cuenta</h3>
-                        <div class="spacer"></div>
-                    </div>
+                    <h3 style="text-align: center; margin-bottom: 25px; color: var(--cafe); font-family: Georgia, serif; font-size: 1.5rem;">Crear Cuenta</h3>
 
                     <form onsubmit="event.preventDefault(); registerCliente();">
                         <div class="input-group"><label>Nombre Completo</label><input type="text" id="reg-nombre" required></div>
@@ -70,24 +68,27 @@
                         <div class="input-group"><label>Contraseña</label><input type="password" id="reg-pass" required></div>
                         <div class="input-group"><label>Calle y Colonia</label><input type="text" id="reg-calle" required></div>
                         <div class="row">
-                            <!-- El número exterior SÍ es obligatorio -->
-                            <div class="input-group"><label>Número Exterior</label><input type="text" id="reg-num" required></div>
-                            <!-- El interior ES OPCIONAL -->
-                            <div class="input-group"><label>Interior / Depto (Opc.)</label><input type="text" id="reg-int"></div>
+                            <div class="input-group"><label>Número Ext.</label><input type="text" id="reg-num" required></div>
+                            <div class="input-group"><label>Interior (Opc.)</label><input type="text" id="reg-int"></div>
                         </div>
-                        <div class="input-group"><label>Referencias (Para el repartidor)</label><textarea id="reg-ref" rows="2" placeholder="Ej. Edificio blanco, portón negro..."></textarea></div>
+                        <div class="input-group"><label>Referencias (Para el repartidor)</label><textarea id="reg-ref" rows="2" placeholder="Ej. Casa de dos pisos, portón negro..."></textarea></div>
                         <button type="submit" class="btn btn-primary full-width mt-10">Registrarme</button>
                     </form>
+
+                    <!-- Enlace de texto para regresar -->
+                    <p style="text-align: center; margin-top: 20px; font-size: 0.95rem; cursor: pointer; color: var(--dorado); font-weight: bold;" onclick="volverAlInicioAuth()">
+                        <i class="fa-solid fa-arrow-left"></i> Regresar a opciones
+                    </p>
                 </div>
             </div>
 
+            <!-- PANEL DE USUARIO LOGUEADO -->
             <div id="auth-user" class="auth-form-container hidden" style="text-align:center;">
                 <h3>Hola, <span id="user-name-display"></span></h3>
                 <p>¿Qué deseas hacer hoy?</p>
                 <button class="btn btn-primary full-width mt-10" onclick="window.location.href='menu.html'">Pedir Comida</button>
                 <button class="btn btn-secondary full-width mt-10" onclick="cerrarSesionCliente()">Cerrar Sesión</button>
             </div>
-            
         </main>
 
         <nav class="bottom-nav">
