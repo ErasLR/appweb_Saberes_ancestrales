@@ -15,7 +15,6 @@ window.onload = function() {
         if(document.getElementById('theme-btn')) document.getElementById('theme-btn').innerHTML = '<i class="fa-solid fa-sun"></i>';
     }
     
-    // Verificar sesión en todas las páginas
     checkSession();
     
     if (document.getElementById('contenedor-menu')) fetchMenu();
@@ -38,7 +37,14 @@ function toggleTheme() {
 async function checkSession() {
     try {
         const res = await fetch('api/clientes.php?action=check_session', { credentials: 'include' });
-        const data = await res.json();
+        const text = await res.text();
+        
+        // Imprimimos en la consola de F12 por si hay error
+        console.log("Respuesta de check_session:", text);
+
+        let data;
+        try { data = JSON.parse(text); } 
+        catch (err) { return console.error("PHP devolvió esto (No es JSON):", text); }
         
         if (data.logged_in) {
             clienteData = data; 
@@ -51,21 +57,43 @@ async function checkSession() {
             if (document.getElementById('auth-guest')) {
                 document.getElementById('auth-guest').classList.remove('hidden');
                 document.getElementById('auth-user').classList.add('hidden');
+                document.getElementById('auth-initial-view').classList.remove('hidden');
+                document.getElementById('form-login').classList.add('hidden');
+                document.getElementById('form-register').classList.add('hidden');
             }
         }
-    } catch (e) { console.error("Error al verificar sesión", e); }
+    } catch (e) { 
+        console.error("Error de sesión:", e); 
+    }
 }
 
 function mostrarForm(tipo) {
+    document.getElementById('auth-initial-view').classList.add('hidden');
     document.getElementById('form-login').classList.add('hidden');
     document.getElementById('form-register').classList.add('hidden');
     document.getElementById(`form-${tipo}`).classList.remove('hidden');
+    document.querySelector('.app-content').scrollTop = 0;
+}
+
+function volverAlInicioAuth() {
+    document.getElementById('auth-initial-view').classList.remove('hidden');
+    document.getElementById('form-login').classList.add('hidden');
+    document.getElementById('form-register').classList.add('hidden');
+}
+
+function regresarNavegacion() {
+    const formLogin = document.getElementById('form-login');
+    const formRegister = document.getElementById('form-register');
+    if ((formLogin && !formLogin.classList.contains('hidden')) || (formRegister && !formRegister.classList.contains('hidden'))) {
+        volverAlInicioAuth();
+    } else {
+        window.location.href = 'index.html';
+    }
 }
 
 async function loginCliente() {
     const tel = document.getElementById('log-tel').value;
     const pass = document.getElementById('log-pass').value;
-    
     if(!tel || !pass) return alert("Llena todos los campos");
 
     try {
@@ -74,10 +102,18 @@ async function loginCliente() {
             body: JSON.stringify({ telefono: tel, password: pass }),
             credentials: 'include'
         });
-        const data = await res.json();
+        
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } 
+        catch (err) { 
+            console.error("Respuesta cruda del servidor:", text);
+            return alert("Error crítico en el servidor. Abre la consola (F12) para ver los detalles."); 
+        }
+
         if (data.success) { window.location.reload(); } 
         else { alert(data.error || "Error al iniciar sesión"); }
-    } catch(e) { alert("Error de conexión con el servidor"); }
+    } catch(e) { alert("Error de red: " + e.message); }
 }
 
 async function registerCliente() {
@@ -85,21 +121,30 @@ async function registerCliente() {
         nombre: document.getElementById('reg-nombre').value,
         telefono: document.getElementById('reg-tel').value,
         password: document.getElementById('reg-pass').value,
-        calle: document.getElementById('reg-calle').value,
+        calle: document.getElementById('reg-calle').value, 
         numero: document.getElementById('reg-num').value,
         interior: document.getElementById('reg-int').value,
         referencias: document.getElementById('reg-ref').value
     };
+    
     try {
         const res = await fetch('api/clientes.php?action=register', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
             credentials: 'include'
         });
-        const data = await res.json();
+        
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } 
+        catch (err) { 
+            console.error("Respuesta cruda del servidor:", text);
+            return alert("Error crítico en el servidor. Abre la consola (F12) para ver los detalles."); 
+        }
+
         if (data.success) { window.location.reload(); } 
         else { alert(data.error || "Error al registrarse"); }
-    } catch(e) { alert("Error de conexión con el servidor"); }
+    } catch(e) { alert("Error de red: " + e.message); }
 }
 
 async function cerrarSesionCliente() {
@@ -111,9 +156,13 @@ async function cerrarSesionCliente() {
    MENÚ
    ========================================= */
 async function fetchMenu() {
-    const res = await fetch('api/menu.php');
-    MENU_DATA = await res.json();
-    cargarMenu();
+    try {
+        const res = await fetch('api/menu.php');
+        MENU_DATA = await res.json();
+        cargarMenu();
+    } catch (e) {
+        document.getElementById('contenedor-menu').innerHTML = "<p>Error al cargar el menú.</p>";
+    }
 }
 
 function cargarMenu() {
@@ -122,6 +171,7 @@ function cargarMenu() {
         const enCarrito = Object.values(carrito).filter(item => item.id == platillo.id).reduce((sum, item) => sum + item.cantidad, 0);
         const textoBoton = enCarrito > 0 ? `Agregar (${enCarrito})` : `Agregar`;
         const claseBoton = enCarrito > 0 ? 'add-btn btn-added' : 'add-btn';
+        
         return `
         <div class="card-food" data-cat="${platillo.categoria}">
             <img src="${platillo.imagen_url}" alt="${platillo.nombre}">
@@ -148,6 +198,7 @@ function filtrarMenu(categoria, btn) {
    ========================================= */
 function agregarAlCarrito(id) {
     const platillo = MENU_DATA.find(p => p.id == id);
+    
     if (platillo.opciones && platillo.opciones.length > 0) {
         itemEnPersonalizacion = platillo;
         document.getElementById('custom-title').innerText = platillo.nombre;
@@ -179,11 +230,16 @@ function confirmarCustomizacion() {
 function agregarDirecto(platillo, selecciones) {
     const key = platillo.id + (selecciones.length > 0 ? '_' + selecciones.join('_') : '');
     const nombreCompleto = platillo.nombre + (selecciones.length > 0 ? ` (${selecciones.join(', ')})` : '');
-    if (carrito[key]) { carrito[key].cantidad++; } 
-    else { carrito[key] = { ...platillo, nombreMostrar: nombreCompleto, cantidad: 1 }; }
+    
+    if (carrito[key]) { 
+        carrito[key].cantidad++; 
+    } else { 
+        carrito[key] = { ...platillo, nombreMostrar: nombreCompleto, cantidad: 1 }; 
+    }
     
     localStorage.setItem('carrito', JSON.stringify(carrito));
     actualizarBotonCarrito();
+    
     if (document.getElementById('contenedor-menu')) cargarMenu();
     if (!document.getElementById('cart-modal').classList.contains('hidden')) abrirCarrito();
 }
@@ -203,6 +259,7 @@ function abrirCarrito() {
     const list = document.getElementById('cart-items');
     let total = 0;
     list.innerHTML = '';
+    
     Object.keys(carrito).forEach(key => {
         const item = carrito[key];
         const sub = item.precio * item.cantidad;
@@ -220,10 +277,10 @@ function abrirCarrito() {
     });
     document.getElementById('cart-total').innerText = `Total: $${total.toFixed(2)}`;
     
-    // Autocompletar datos del cliente
     if (clienteData) {
         document.getElementById('del-tel').value = clienteData.telefono || '';
-        document.getElementById('del-dir').value = `${clienteData.calle || ''} ${clienteData.numero || ''} ${clienteData.interior ? 'Int ' + clienteData.interior : ''}`.trim();
+        document.getElementById('del-calle').value = clienteData.calle_colonia || '';
+        document.getElementById('del-num').value = clienteData.numero || ''; 
         document.getElementById('del-notas').value = clienteData.referencias || '';
     }
 
@@ -273,19 +330,22 @@ async function procesarPago(event) {
     const total = Object.values(carrito).reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
     
     const telEntrega = document.getElementById('del-tel').value.trim();
-    const dirEntrega = document.getElementById('del-dir').value.trim();
+    const calleEntrega = document.getElementById('del-calle').value.trim();
+    const numEntrega = document.getElementById('del-num').value.trim(); 
     const notasEntrega = document.getElementById('del-notas').value.trim();
 
-    if(!telEntrega || !dirEntrega) {
-        return alert("Por favor, llena el teléfono y la dirección de entrega.");
+    if(!telEntrega || !calleEntrega || !numEntrega) {
+        return alert("Por favor, llena el teléfono, la calle/colonia y el número exterior.");
     }
+
+    const direccionCompleta = `${calleEntrega} #${numEntrega}`;
 
     const payload = { 
         total: total, 
         metodo_pago: metodo, 
         carrito: Object.values(carrito),
         telefono_entrega: telEntrega,
-        direccion_entrega: dirEntrega,
+        direccion_entrega: direccionCompleta,
         notas_entrega: notasEntrega
     };
 
@@ -300,11 +360,17 @@ async function procesarPago(event) {
             body: JSON.stringify(payload),
             credentials: 'include'
         });
-        const data = await res.json();
+        
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } 
+        catch (err) { 
+            console.error("Respuesta cruda de pedidos:", text);
+            return alert("Error crítico en el servidor (pedidos). Abre la consola (F12)."); 
+        }
 
         if (data.success) {
-            // Pasamos el ID del pedido como Folio
-            generarPDF(metodo, total, telEntrega, dirEntrega, notasEntrega, data.pedido_id);
+            generarPDF(metodo, total, telEntrega, direccionCompleta, notasEntrega, data.pedido_id);
             
             carrito = {};
             localStorage.removeItem('carrito');
@@ -332,7 +398,7 @@ function generarPDF(metodo, total, tel, dir, notas, folio) {
     document.getElementById('ticket-nombre').innerText = clienteData.nombre;
     document.getElementById('ticket-gracias-nombre').innerText = clienteData.nombre;
     document.getElementById('ticket-tel').innerText = tel;
-    document.getElementById('ticket-dir').innerText = dir;
+    document.getElementById('ticket-dir').innerText = dir; 
     document.getElementById('ticket-metodo').innerText = metodo;
     document.getElementById('ticket-total').innerText = `$${total.toFixed(2)}`;
     
