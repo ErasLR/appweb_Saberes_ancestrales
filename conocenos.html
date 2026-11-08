@@ -7,20 +7,55 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Estilo rápido para darle sombra y mejor visibilidad a las fotos */
         .img-conocenos {
             width: 100%;
             object-fit: cover;
             border-radius: 12px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Sombra para que resalte */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             border: 2px solid var(--border-color);
+        }
+        /* Estilos para la lista de contacto */
+        .contact-item {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+        .contact-icon {
+            font-size: 1.5rem;
+            color: var(--cafe);
+            width: 40px;
+            text-align: center;
+        }
+        .contact-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+        .contact-title {
+            display: block;
+            font-size: 1.1rem;
+            color: var(--texto-main);
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .contact-subtitle {
+            color: var(--texto-muted);
+            font-size: 0.95rem;
+        }
+        .contact-arrow {
+            color: var(--texto-muted);
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- CABECERA -->
         <header class="app-header">
             <div class="logo-area" onclick="window.location.href='index.html'">
                 <img src="logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/75/C58B45/FFFFFF?text=S'">
@@ -34,7 +69,6 @@
             </div>
         </header>
 
-        <!-- CONTENIDO -->
         <main class="app-content">
             <h2 class="section-title">Nuestra Historia</h2>
             
@@ -46,7 +80,6 @@
 
             <!-- SECCIÓN 2: HISTORIA FAMILIAR -->
             <div class="info-card" style="margin-bottom: 20px;">
-                <!-- Imagen un poco más alta (200px) y con sombra -->
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwzfvdLH1TzBTT8ViwcJU6wkN2vRgZNaHvNCVM7sRlFg&s=10" alt="Historia de la Vainilla" class="img-conocenos" style="height: 200px;">
                 <h3 style="font-size: 1.2rem;">Una Tradición de Generaciones</h3>
                 <p style="margin-bottom: 10px; text-align: justify; font-size: 0.9rem; line-height: 1.5;">Nuestra historia se remonta a nuestros bisabuelos y abuelos, quienes trabajaron en la época de mayor auge de la vainilla junto a la familia Tremari. De ellos aprendimos el arte del cultivo, la cosecha y el beneficio tradicional para secar las vainas y despertar su aroma.</p>
@@ -92,37 +125,90 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN 4: SUCURSALES Y MAPAS -->
+            <!-- SECCIÓN 4: SUCURSALES Y MAPAS (VISÍTANOS) -->
             <h2 class="section-title" style="margin-top: 25px;">Visítanos</h2>
             <p style="text-align: center; margin-bottom: 20px; font-size: 0.9rem; color: var(--texto-muted);">Toca el botón para ver la ubicación exacta en Google Maps.</p>
 
-            <!-- Sucursal 1: Centro Turístico -->
             <div class="info-card" style="margin-bottom: 20px; border-left: 5px solid var(--dorado); padding: 15px;">
                 <h3 style="font-size: 1.1rem; margin-bottom: 10px;"><i class="fa-solid fa-tree" style="color: var(--verde);"></i> Centro Turístico</h3>
-                <!-- Imagen más alta (160px) -->
                 <img src="https://img.restaurantguru.com/r085-design-Centro-Turistico-Saberes-Ancestrales-de-la-Vainilla-2022-09.jpg" alt="Centro Turístico" class="img-conocenos" style="height: 160px;">
                 <p style="margin: 0 0 15px 0; font-size: 0.85rem; line-height: 1.4;">Aquí encontrarás los sembradíos demostrativos, el museo histórico, los talleres artesanales y un hermoso mirador.</p>
-                
                 <a href="https://maps.app.goo.gl/7oVFk2wfuPodurtj6" target="_blank" rel="noopener noreferrer" class="btn btn-primary full-width" style="text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.9rem; padding: 10px;">
                     <i class="fa-solid fa-location-dot"></i> Abrir en Google Maps
                 </a>
             </div>
 
-            <!-- Sucursal 2: Restaurante -->
             <div class="info-card" style="margin-bottom: 20px; border-left: 5px solid var(--dorado); padding: 15px;">
                 <h3 style="font-size: 1.1rem; margin-bottom: 10px;"><i class="fa-solid fa-utensils" style="color: var(--dorado);"></i> Restaurante</h3>
-                <!-- Imagen más alta (160px) -->
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_yNnZ3Bwen6vySOdE4tG2aaPSbmkBBdI9GcRNLlF7XfSuHzixDFV2ieHK&s=10" alt="Restaurante" class="img-conocenos" style="height: 160px;">
                 <p style="margin: 0 0 15px 0; font-size: 0.85rem; line-height: 1.4;">El lugar perfecto para disfrutar de nuestra gastronomía tradicional elaborada con la vainilla que cultivamos en casa.</p>
-                
                 <a href="https://maps.app.goo.gl/7oVFk2wfuPodurtj6" target="_blank" rel="noopener noreferrer" class="btn btn-secondary full-width" style="text-decoration: none; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.9rem; padding: 10px;">
                     <i class="fa-solid fa-map-location-dot"></i> Abrir en Google Maps
                 </a>
             </div>
 
+            <!-- NUEVA SECCIÓN: ¿NECESITAS AYUDA? -->
+            <h2 class="section-title" style="margin-top: 30px;">¿Necesitas ayuda?</h2>
+            <p style="text-align: center; margin-bottom: 20px; color: var(--texto-muted); font-size: 0.95rem;">
+                Estamos para atenderte. Comunícate con nosotros.
+            </p>
+
+            <div class="info-card" style="margin-bottom: 25px; padding: 0; overflow: hidden;">
+                <!-- Foto del interior del restaurante -->
+                <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80" alt="Interior del Restaurante" style="width:100%; height:200px; object-fit:cover; display:block;">
+                
+                <div style="padding: 15px;">
+                    <!-- Teléfono -->
+                    <a href="tel:7841150077" class="contact-item">
+                        <i class="fa-solid fa-phone contact-icon"></i>
+                        <div class="contact-info">
+                            <strong class="contact-title">Teléfono</strong>
+                            <span class="contact-subtitle">784 115 0077</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right contact-arrow"></i>
+                    </a>
+
+                    <!-- Correo -->
+                    <a href="mailto:fe_barragan@hotmail.com" class="contact-item">
+                        <i class="fa-solid fa-envelope contact-icon"></i>
+                        <div class="contact-info">
+                            <strong class="contact-title">Correo electrónico</strong>
+                            <span class="contact-subtitle">fe_barragan@hotmail.com</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right contact-arrow"></i>
+                    </a>
+
+                    <!-- Instagram -->
+                    <a href="https://instagram.com/saberesancestralesdelavainilla" target="_blank" rel="noopener noreferrer" class="contact-item">
+                        <i class="fa-brands fa-instagram contact-icon"></i>
+                        <div class="contact-info">
+                            <strong class="contact-title">Instagram</strong>
+                            <span class="contact-subtitle">@saberesancestralesdelavainilla</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right contact-arrow"></i>
+                    </a>
+
+                    <!-- Facebook -->
+                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="contact-item">
+                        <i class="fa-brands fa-facebook-f contact-icon"></i>
+                        <div class="contact-info">
+                            <strong class="contact-title">Facebook</strong>
+                            <span class="contact-subtitle">Consultar página del restaurante</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right contact-arrow"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Botón de Contáctanos -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <a href="tel:7841150077" class="btn btn-secondary full-width" style="padding: 15px; font-size: 1.1rem; text-decoration: none; display: block; border-radius: 12px;">
+                    Contáctanos
+                </a>
+            </div>
+
         </main>
 
-        <!-- NAVEGACIÓN INFERIOR -->
         <nav class="bottom-nav">
             <a href="index.html" class="nav-item"><span class="icon"><i class="fa-solid fa-house"></i></span><span class="label">Inicio</span></a>
             <a href="menu.html" class="nav-item"><span class="icon"><i class="fa-solid fa-utensils"></i></span><span class="label">Menú</span></a>
@@ -130,7 +216,6 @@
             <a href="login.html" class="nav-item"><span class="icon"><i class="fa-solid fa-user"></i></span><span class="label">Mi Cuenta</span></a>
         </nav>
     </div>
-    
     <script src="app.js"></script>
 </body>
 </html>
