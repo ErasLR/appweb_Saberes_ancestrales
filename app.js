@@ -468,3 +468,79 @@ function descargarTicketPDF() {
     
     html2pdf().set(opt).from(element).save();
 }
+/* =========================================
+   NARRADOR DE ALTA CALIDAD (HUMANO)
+   ========================================= */
+let reproduciendoNarracion = false;
+let sintetizador = window.speechSynthesis;
+let utterance = null;
+
+// Buscar la voz más natural disponible en el dispositivo
+function obtenerVozDeCalidad() {
+    const voces = sintetizador.getVoices();
+    const vocesEspanol = voces.filter(voz => voz.lang.includes('es'));
+    
+    // 1. Buscamos voces "Neural" (Edge) o "Premium" (Apple)
+    const vozPremium = vocesEspanol.find(v => 
+        v.name.toLowerCase().includes('neural') || 
+        v.name.toLowerCase().includes('premium') || 
+        v.name.toLowerCase().includes('natural')
+    );
+    if (vozPremium) return vozPremium;
+
+    // 2. Buscamos las voces conocidas por ser buenas (Mónica, Paulina, Sabina, etc.)
+    const nombresBuenos = ['Paulina', 'Sabina', 'Mónica', 'Monica', 'Helena', 'Luciana', 'Google español'];
+    for (let nombre of nombresBuenos) {
+        const encontrada = vocesEspanol.find(v => v.name.includes(nombre));
+        if (encontrada) return encontrada;
+    }
+
+    // 3. Respaldo: la primera voz en español
+    return vocesEspanol.length > 0 ? vocesEspanol[0] : null;
+}
+
+function controlarNarrador() {
+    const btn = document.getElementById('btn-narrador');
+    const texto = document.getElementById('texto-narracion').innerText;
+
+    if (!('speechSynthesis' in window)) {
+        alert("Tu navegador no soporta la narración.");
+        return;
+    }
+
+    if (reproduciendoNarracion) {
+        sintetizador.cancel();
+        reproduciendoNarracion = false;
+        btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Escuchar Historia';
+        btn.classList.remove('playing');
+        return;
+    }
+
+    utterance = new SpeechSynthesisUtterance(texto);
+    utterance.lang = 'es-MX';
+    
+    // Ajustes para que suene natural y pausado
+    utterance.rate = 0.85;  // Velocidad más lenta (0.85) para que no suene apresurado
+    utterance.pitch = 1.0;  // Tono normal (sin robotizar)
+    utterance.volume = 1.0; // Volumen máximo
+
+    const vozElegida = obtenerVozDeCalidad();
+    if (vozElegida) {
+        utterance.voice = vozElegida;
+    }
+
+    utterance.onend = function() {
+        reproduciendoNarracion = false;
+        btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Escuchar Historia';
+        btn.classList.remove('playing');
+    };
+
+    sintetizador.speak(utterance);
+    reproduciendoNarracion = true;
+    btn.innerHTML = '<i class="fa-solid fa-stop"></i> Detener Narración';
+    btn.classList.add('playing');
+}
+
+if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = obtenerVozDeCalidad;
+}
