@@ -32,7 +32,7 @@ function toggleTheme() {
 }
 
 /* =========================================
-   LÓGICA DE SESIÓN (LOGIN / REGISTRO)
+   LÓGICA DE SESIÓN Y MIS COMPRAS
    ========================================= */
 async function checkSession() {
     try {
@@ -61,6 +61,70 @@ async function checkSession() {
         }
     } catch (e) { 
         console.error("Error de sesión:", e); 
+    }
+}
+
+async function cargarMisCompras() {
+    const contenedor = document.getElementById('historial-compras');
+    contenedor.style.display = 'block';
+    contenedor.innerHTML = '<p style="text-align:center; color:var(--texto-muted);">Cargando historial...</p>';
+
+    try {
+        const res = await fetch('api/mis_pedidos.php', { credentials: 'include' });
+        const pedidos = await res.json();
+
+        if (pedidos.error) {
+            contenedor.innerHTML = `<p style="color:red; text-align:center;">${pedidos.error}</p>`;
+            return;
+        }
+
+        if (pedidos.length === 0) {
+            contenedor.innerHTML = '<p style="text-align:center; color:var(--texto-muted);">Aún no tienes compras registradas.</p>';
+            return;
+        }
+
+        let html = '<h4 style="color:var(--texto-main); margin-bottom:15px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">Tus Pedidos Recientes</h4>';
+        
+        pedidos.forEach(p => {
+            // Sanitización extrema: Si detecta "null", lo cambia por "Platillo"
+            let itemsLimpios = (p.items && p.items !== 'null') ? p.items : 'Sin detalles';
+            itemsLimpios = itemsLimpios.replace(/null/gi, 'Platillo'); 
+
+            const folio = (p.id && p.id !== 'null') ? p.id : 'S/N';
+            const fecha = (p.fecha && p.fecha !== 'null') ? p.fecha : 'Fecha no disponible';
+            const total = (p.total && p.total !== 'null') ? parseFloat(p.total).toFixed(2) : '0.00';
+            const estado = (p.estado && p.estado !== 'null') ? p.estado : 'Pendiente';
+            const direccion = (p.direccion_entrega && p.direccion_entrega !== 'null') ? p.direccion_entrega : '';
+
+            let colorEstado = 'var(--dorado)';
+            if(estado === 'Entregado' || estado === 'Lista') colorEstado = 'var(--verde)';
+            if(estado === 'En preparación') colorEstado = 'var(--dorado)';
+            if(estado === 'Cancelado') colorEstado = 'red';
+
+            html += `
+            <div class="info-card" style="margin-bottom: 15px; padding: 15px; border-left: 4px solid ${colorEstado};">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed var(--border-color); padding-bottom:8px;">
+                    <strong style="color:var(--texto-main); font-size: 1.1rem;">Folio #${folio}</strong>
+                    <small style="color:var(--texto-muted);">${fecha}</small>
+                </div>
+                
+                <div style="font-size: 0.95rem; color: var(--texto-main); margin-bottom: 12px; line-height: 1.6;">
+                    <strong style="font-size: 0.85rem; color: var(--texto-muted); text-transform: uppercase;">Lo que pediste:</strong><br>
+                    ${itemsLimpios}
+                </div>
+
+                ${direccion ? `<div style="font-size: 0.85rem; color: var(--texto-muted); margin-bottom: 12px;"><i class="fa-solid fa-location-dot"></i> Entrega en: ${direccion}</div>` : ''}
+                
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size: 0.9rem; margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
+                    <span style="color:${colorEstado}; font-weight:bold; font-size: 1rem;">Estado: ${estado}</span>
+                    <strong style="color:var(--verde); font-size:1.2rem;">Total: $${total}</strong>
+                </div>
+            </div>`;
+        });
+
+        contenedor.innerHTML = html;
+    } catch (e) {
+        contenedor.innerHTML = '<p style="color:red; text-align:center;">Error de conexión al cargar compras.</p>';
     }
 }
 
@@ -134,7 +198,7 @@ async function cerrarSesionCliente() {
 }
 
 /* =========================================
-   MENÚ
+   MENÚ Y CARRITO
    ========================================= */
 async function fetchMenu() {
     try {
@@ -148,17 +212,26 @@ async function fetchMenu() {
 
 function cargarMenu() {
     const contenedor = document.getElementById('contenedor-menu');
+    if (!MENU_DATA || MENU_DATA.length === 0) {
+        contenedor.innerHTML = "<p style='text-align:center; width:100%;'>No hay platillos disponibles.</p>";
+        return;
+    }
+
     contenedor.innerHTML = MENU_DATA.map(platillo => {
         const enCarrito = Object.values(carrito).filter(item => item.id == platillo.id).reduce((sum, item) => sum + item.cantidad, 0);
         const textoBoton = enCarrito > 0 ? `Agregar (${enCarrito})` : `Agregar`;
         const claseBoton = enCarrito > 0 ? 'add-btn btn-added' : 'add-btn';
         
+        const nombreFinal = (platillo.nombre && platillo.nombre !== 'null' && platillo.nombre !== '') ? platillo.nombre : 'Platillo de la casa';
+        const descFinal = (platillo.descripcion && platillo.descripcion !== 'null' && platillo.descripcion !== '') ? platillo.descripcion : 'Delicioso platillo preparado con el toque especial de la casa.';
+        const imgFinal = (platillo.imagen_url && platillo.imagen_url !== 'null' && platillo.imagen_url !== '') ? platillo.imagen_url : 'https://images.unsplash.com/photo-1544025162-811114215b2b';
+
         return `
         <div class="card-food" data-cat="${platillo.categoria}">
-            <img src="${platillo.imagen_url}" alt="${platillo.nombre}">
+            <img src="${imgFinal}" alt="${nombreFinal}">
             <div class="card-food-body">
-                <h3>${platillo.nombre}</h3>
-                <p>${platillo.descripcion}</p>
+                <h3>${nombreFinal}</h3>
+                <p>${descFinal}</p>
                 <span class="card-food-price">$${parseFloat(platillo.precio).toFixed(2)}</span>
                 <button class="${claseBoton}" onclick="agregarAlCarrito(${platillo.id})">${textoBoton}</button>
             </div>
@@ -174,12 +247,8 @@ function filtrarMenu(categoria, btn) {
     });
 }
 
-/* =========================================
-   CARRITO Y PERSONALIZACIÓN
-   ========================================= */
 function agregarAlCarrito(id) {
     const platillo = MENU_DATA.find(p => p.id == id);
-    
     if (platillo.opciones && platillo.opciones.length > 0) {
         itemEnPersonalizacion = platillo;
         document.getElementById('custom-title').innerText = platillo.nombre;
@@ -209,8 +278,14 @@ function confirmarCustomizacion() {
 }
 
 function agregarDirecto(platillo, selecciones) {
+    // AQUÍ LIMPIAMOS EL NOMBRE ANTES DE GUARDARLO
+    let nombreBase = platillo.nombre;
+    if (!nombreBase || nombreBase === 'null' || nombreBase.trim() === '') {
+        nombreBase = 'Platillo de la casa';
+    }
+
+    const nombreCompleto = nombreBase + (selecciones.length > 0 ? ` (${selecciones.join(', ')})` : '');
     const key = platillo.id + (selecciones.length > 0 ? '_' + selecciones.join('_') : '');
-    const nombreCompleto = platillo.nombre + (selecciones.length > 0 ? ` (${selecciones.join(', ')})` : '');
     
     if (carrito[key]) { 
         carrito[key].cantidad++; 
@@ -220,7 +295,6 @@ function agregarDirecto(platillo, selecciones) {
     
     localStorage.setItem('carrito', JSON.stringify(carrito));
     actualizarBotonCarrito();
-    
     if (document.getElementById('contenedor-menu')) cargarMenu();
     if (!document.getElementById('cart-modal').classList.contains('hidden')) abrirCarrito();
 }
@@ -233,7 +307,6 @@ function actualizarBotonCarrito() {
 
 function abrirCarrito() {
     if(Object.keys(carrito).length === 0) return alert("El carrito está vacío");
-    
     document.getElementById('payment-step-1').classList.remove('hidden');
     document.getElementById('payment-step-card').classList.add('hidden');
 
@@ -264,7 +337,6 @@ function abrirCarrito() {
         document.getElementById('del-num').value = clienteData.numero || ''; 
         document.getElementById('del-notas').value = clienteData.referencias || '';
     }
-
     document.getElementById('cart-modal').classList.remove('hidden');
 }
 
@@ -285,13 +357,13 @@ function guardarCarritoYRecargar() {
    ========================================= */
 function irAPago() {
     if (!clienteData) {
-        alert("Debes iniciar sesión para continuar con el pedido.");
-        window.location.href = 'login.html';
+        if(confirm("Para completar tu pedido necesitas iniciar sesión o crear una cuenta. ¿Deseas ir ahora?")) {
+            window.location.href = 'login.html';
+        }
         return;
     }
     
     const metodo = document.getElementById('payment-method').value;
-    
     if (metodo === 'Tarjeta de Crédito' || metodo === 'Tarjeta de Débito') {
         document.getElementById('payment-step-1').classList.add('hidden');
         document.getElementById('payment-step-card').classList.remove('hidden');
@@ -308,7 +380,8 @@ function volverAPaso1() {
 
 async function procesarPago(event) {
     const metodo = document.getElementById('payment-method').value;
-    const total = Object.values(carrito).reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+    const carritoGuardado = JSON.parse(JSON.stringify(carrito)); // Guardamos copia
+    const total = Object.values(carritoGuardado).reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
     
     const telEntrega = document.getElementById('del-tel').value.trim();
     const calleEntrega = document.getElementById('del-calle').value.trim();
@@ -320,15 +393,7 @@ async function procesarPago(event) {
     }
 
     const direccionCompleta = `${calleEntrega} #${numEntrega}`;
-
-    const payload = { 
-        total: total, 
-        metodo_pago: metodo, 
-        carrito: Object.values(carrito),
-        telefono_entrega: telEntrega,
-        direccion_entrega: direccionCompleta,
-        notas_entrega: notasEntrega
-    };
+    const payload = { total, metodo_pago: metodo, carrito: Object.values(carritoGuardado), telefono_entrega: telEntrega, direccion_entrega: direccionCompleta, notas_entrega: notasEntrega };
 
     let btn = (event && event.target) ? event.target : document.querySelector('#payment-step-1 .btn-primary');
     const textoOriginal = btn.innerHTML;
@@ -348,13 +413,35 @@ async function procesarPago(event) {
         catch (err) { return alert("Error en el servidor: " + text.substring(0, 200)); }
 
         if (data.success) {
-            generarPDF(metodo, total, telEntrega, direccionCompleta, notasEntrega, data.pedido_id);
-            
             carrito = {};
             localStorage.removeItem('carrito');
             actualizarBotonCarrito();
             cerrarCarrito();
+            
+            // Llenamos el ticket
+            const numFolio = data.pedido_id;
+            const fechaActual = new Date().toLocaleString();
+            document.getElementById('ticket-folio').innerText = `#${numFolio}`;
+            document.getElementById('ticket-fecha').innerText = fechaActual;
+            document.getElementById('ticket-nombre').innerText = clienteData.nombre;
+            document.getElementById('ticket-gracias-nombre').innerText = clienteData.nombre;
+            document.getElementById('ticket-tel').innerText = telEntrega;
+            document.getElementById('ticket-dir').innerText = direccionCompleta; 
+            document.getElementById('ticket-metodo').innerText = metodo;
+            document.getElementById('ticket-total').innerText = `$${total.toFixed(2)}`;
+            
+            let itemsHtml = '';
+            Object.values(carritoGuardado).forEach(item => {
+                itemsHtml += `<p>${item.cantidad}x ${item.nombreMostrar} - $${(item.precio * item.cantidad).toFixed(2)}</p>`;
+            });
+            document.getElementById('ticket-items').innerHTML = itemsHtml;
+
+            if(notasEntrega) {
+                document.getElementById('ticket-items').innerHTML += `<br><p style="font-size:10px;"><strong>Notas:</strong> ${notasEntrega}</p>`;
+            }
+
             document.getElementById('ticket-modal').classList.remove('hidden');
+            
         } else {
             alert(data.error || "Error al procesar el pago");
             btn.innerHTML = textoOriginal;
@@ -367,40 +454,17 @@ async function procesarPago(event) {
     }
 }
 
-function generarPDF(metodo, total, tel, dir, notas, folio) {
-    const numFolio = folio ? folio : Math.floor(Math.random() * 10000);
-    const fechaActual = new Date().toLocaleString();
-
-    document.getElementById('ticket-folio').innerText = `#${numFolio}`;
-    document.getElementById('ticket-fecha').innerText = fechaActual;
-    document.getElementById('ticket-nombre').innerText = clienteData.nombre;
-    document.getElementById('ticket-gracias-nombre').innerText = clienteData.nombre;
-    document.getElementById('ticket-tel').innerText = tel;
-    document.getElementById('ticket-dir').innerText = dir; 
-    document.getElementById('ticket-metodo').innerText = metodo;
-    document.getElementById('ticket-total').innerText = `$${total.toFixed(2)}`;
-    
-    let itemsHtml = '';
-    Object.values(carrito).forEach(item => {
-        itemsHtml += `<p>${item.cantidad}x ${item.nombreMostrar} - $${(item.precio * item.cantidad).toFixed(2)}</p>`;
-    });
-    document.getElementById('ticket-items').innerHTML = itemsHtml;
-
-    if(notas) {
-        document.getElementById('ticket-items').innerHTML += `<br><p style="font-size:10px;"><strong>Notas:</strong> ${notas}</p>`;
-    }
-
+function descargarTicketPDF() {
     const element = document.getElementById('ticket-pdf-area');
-    element.style.display = 'block';
+    const numFolio = document.getElementById('ticket-folio').innerText.replace('#', '');
+    
     const opt = { 
         margin: 0.5, 
         filename: `Ticket_Saberes_${numFolio}.pdf`, 
         image: { type: 'jpeg', quality: 0.98 }, 
-        html2canvas: { scale: 2 }, 
+        html2canvas: { scale: 2, useCORS: true }, 
         jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } 
     };
     
-    html2pdf().set(opt).from(element).save().then(() => { 
-        element.style.display = 'none'; 
-    });
+    html2pdf().set(opt).from(element).save();
 }
