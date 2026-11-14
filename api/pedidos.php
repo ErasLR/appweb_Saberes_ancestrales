@@ -11,19 +11,20 @@ if (!isset($_SESSION['cliente_id'])) {
 
 $data = json_decode(file_get_contents('php://input'), true);
 $cliente_id = $_SESSION['cliente_id'];
-$total = floatval($data['total']);
-$metodo_pago = mysqli_real_escape_string($link, $data['metodo_pago']);
-$carrito = $data['carrito'];
+$total = isset($data['total']) ? floatval($data['total']) : 0;
+$costo_envio = isset($data['costo_envio']) ? floatval($data['costo_envio']) : 0;
+$metodo_pago = isset($data['metodo_pago']) ? mysqli_real_escape_string($link, $data['metodo_pago']) : 'Efectivo';
+$carrito = isset($data['carrito']) ? $data['carrito'] : [];
 
-$tel_entrega = mysqli_real_escape_string($link, $data['telefono_entrega']);
-$dir_entrega = mysqli_real_escape_string($link, $data['direccion_entrega']);
-$notas_entrega = mysqli_real_escape_string($link, $data['notas_entrega']);
+$tel_entrega = isset($data['telefono_entrega']) ? mysqli_real_escape_string($link, $data['telefono_entrega']) : '';
+$dir_entrega = isset($data['direccion_entrega']) ? mysqli_real_escape_string($link, $data['direccion_entrega']) : '';
+$notas_entrega = isset($data['notas_entrega']) ? mysqli_real_escape_string($link, $data['notas_entrega']) : '';
 
 mysqli_query($link, "START TRANSACTION");
 
 try {
-    $query = "INSERT INTO pedidos (cliente_id, total, metodo_pago, telefono_entrega, direccion_entrega, notas_entrega) 
-              VALUES ($cliente_id, $total, '$metodo_pago', '$tel_entrega', '$dir_entrega', '$notas_entrega')";
+    $query = "INSERT INTO pedidos (cliente_id, total, costo_envio, metodo_pago, telefono_entrega, direccion_entrega, notas_entrega) 
+              VALUES ($cliente_id, $total, $costo_envio, '$metodo_pago', '$tel_entrega', '$dir_entrega', '$notas_entrega')";
               
     if (!mysqli_query($link, $query)) throw new Exception(mysqli_error($link));
     $pedido_id = mysqli_insert_id($link);
@@ -31,7 +32,9 @@ try {
     foreach ($carrito as $item) {
         $nombre_platillo = mysqli_real_escape_string($link, $item['nombreMostrar']);
         $cantidad = intval($item['cantidad']);
-        $query_det = "INSERT INTO pedido_detalles (pedido_id, platillo_nombre, cantidad) VALUES ($pedido_id, '$nombre_platillo', $cantidad)";
+        
+        $query_det = "INSERT INTO pedido_detalles (pedido_id, platillo_nombre, cantidad) 
+                      VALUES ($pedido_id, '$nombre_platillo', $cantidad)";
         if (!mysqli_query($link, $query_det)) throw new Exception(mysqli_error($link));
     }
 
