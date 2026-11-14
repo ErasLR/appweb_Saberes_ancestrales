@@ -163,32 +163,37 @@ async function cargarMisCompras() {
         if (pedidos.length === 0) { contenedor.innerHTML = '<p style="text-align:center; color:var(--texto-muted);">Aún no tienes compras registradas.</p>'; return; }
 
         let html = '<h4 style="color:var(--texto-main); margin-bottom:15px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">Tus Pedidos Recientes</h4>';
+        
         pedidos.forEach(p => {
             let itemsLimpios = (p.items && p.items !== 'null') ? p.items : 'Sin detalles';
             itemsLimpios = itemsLimpios.replace(/null/gi, 'Platillo'); 
             const folio = (p.id && p.id !== 'null') ? p.id : 'S/N';
             const fecha = (p.fecha && p.fecha !== 'null') ? p.fecha : 'Fecha no disponible';
             const total = (p.total && p.total !== 'null') ? parseFloat(p.total).toFixed(2) : '0.00';
-            const estado = (p.estado && p.estado !== 'null') ? p.estado : 'Pendiente';
             const direccion = (p.direccion_entrega && p.direccion_entrega !== 'null') ? p.direccion_entrega : '';
 
-            let colorEstado = 'var(--dorado)';
-            if(estado === 'Entregado' || estado === 'Lista') colorEstado = 'var(--verde)';
-            if(estado === 'En preparación') colorEstado = 'var(--dorado)';
-            if(estado === 'Cancelado') colorEstado = 'red';
-
+            // Se eliminó por completo la lógica del estado (colorEstado, etc.)
+            
             html += `
-            <div class="info-card" style="margin-bottom: 15px; padding: 15px; border-left: 4px solid ${colorEstado};">
+            <div class="info-card" style="margin-bottom: 15px; padding: 15px; border-left: 4px solid var(--dorado);">
+                
+                <!-- Cabecera: Folio y Fecha -->
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed var(--border-color); padding-bottom:8px;">
                     <strong style="color:var(--texto-main); font-size: 1.1rem;">Folio #${folio}</strong>
                     <small style="color:var(--texto-muted);">${fecha}</small>
                 </div>
+                
+                <!-- Lista de Platillos -->
                 <div style="font-size: 0.95rem; color: var(--texto-main); margin-bottom: 12px; line-height: 1.6;">
-                    <strong style="font-size: 0.85rem; color: var(--texto-muted); text-transform: uppercase;">Lo que pediste:</strong><br>${itemsLimpios}
+                    <strong style="font-size: 0.85rem; color: var(--texto-muted); text-transform: uppercase;">Lo que pediste:</strong><br>
+                    ${itemsLimpios}
                 </div>
+
+                <!-- Dirección de Entrega -->
                 ${direccion ? `<div style="font-size: 0.85rem; color: var(--texto-muted); margin-bottom: 12px;"><i class="fa-solid fa-location-dot"></i> Entrega en: ${direccion}</div>` : ''}
-                <div style="display:flex; justify-content:space-between; align-items:center; font-size: 0.9rem; margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
-                    <span style="color:${colorEstado}; font-weight:bold; font-size: 1rem;">Estado: ${estado}</span>
+                
+                <!-- Footer: Solo el Total -->
+                <div style="display:flex; justify-content:flex-end; align-items:center; font-size: 0.9rem; margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
                     <strong style="color:var(--verde); font-size:1.2rem;">Total: $${total}</strong>
                 </div>
             </div>`;
@@ -306,15 +311,15 @@ function calcularEnvio() {
     
     const colonia = coloniaSelect.value;
     
-    // ZONAS Y COSTOS BASADOS EN TUS REQUERIMIENTOS
+    // ZONAS Y COSTOS
     if (colonia === 'Centro' || colonia === 'Barrio del Zapote' || colonia === 'Barrio de la Cruz') {
-        costoEnvioActual = 30; // Zona Centro / Cerca
+        costoEnvioActual = 30;
     } else if (colonia === 'Benito Juárez' || colonia === 'Emiliano Zapata') {
-        costoEnvioActual = 50; // Zona Media / Alejadita
+        costoEnvioActual = 50;
     } else if (colonia === 'Lázaro Cárdenas' || colonia === 'Otra') {
-        costoEnvioActual = 80; // Zona Lejana
+        costoEnvioActual = 80;
     } else {
-        costoEnvioActual = 0; // No ha seleccionado
+        costoEnvioActual = 0; 
     }
     
     let totalPlatillos = Object.values(carrito).reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
@@ -386,7 +391,7 @@ function guardarCarritoYRecargar() {
 }
 
 /* =========================================
-   FLUJO DE PAGO Y TICKET (CON DESGLOSE)
+   FLUJO DE PAGO Y TICKET
    ========================================= */
 function irAPago() {
     if (!clienteData) { mostrarAvisoLogin(); return; }
@@ -407,8 +412,6 @@ function volverAPaso1() {
 async function procesarPago(event) {
     const metodo = document.getElementById('payment-method').value;
     const carritoGuardado = JSON.parse(JSON.stringify(carrito)); 
-    
-    // CALCULAMOS SUBTOTAL Y TOTAL
     let subtotal = Object.values(carritoGuardado).reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
     let granTotal = subtotal + costoEnvioActual;
     
@@ -457,7 +460,6 @@ async function procesarPago(event) {
             const numFolio = data.pedido_id;
             const fechaActual = new Date().toLocaleString();
             
-            // LLENAMOS EL TICKET VISUAL
             document.getElementById('ticket-folio').innerText = `#${numFolio}`;
             document.getElementById('ticket-fecha').innerText = fechaActual;
             document.getElementById('ticket-nombre').innerText = clienteData.nombre;
@@ -466,7 +468,6 @@ async function procesarPago(event) {
             document.getElementById('ticket-dir').innerText = direccionCompleta; 
             document.getElementById('ticket-metodo').innerText = metodo;
             
-            // AQUÍ PONEMOS EL DESGLOSE
             document.getElementById('ticket-subtotal').innerText = `$${subtotal.toFixed(2)}`;
             document.getElementById('ticket-envio').innerText = `$${costoEnvioActual.toFixed(2)}`;
             document.getElementById('ticket-total').innerText = `$${granTotal.toFixed(2)}`;
