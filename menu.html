@@ -70,13 +70,30 @@
             
             <div id="payment-step-1">
                 <h4 style="margin-top:15px; color:var(--texto-main); font-size:1.1rem;">Datos de Entrega</h4>
+                
                 <div class="input-group">
                     <label>Teléfono de contacto</label>
                     <input type="tel" id="del-tel" required>
                 </div>
+
+                <!-- SELECTOR DE COLONIA PARA EL ENVÍO -->
+                <div class="input-group">
+                    <label>Colonia de entrega (Costo de envío)</label>
+                    <select id="del-colonia" class="payment-select" onchange="calcularEnvio()" required>
+                        <option value="">Selecciona tu colonia...</option>
+                        <option value="Centro">Centro ($30)</option>
+                        <option value="Barrio del Zapote">Barrio del Zapote ($30)</option>
+                        <option value="Barrio de la Cruz">Barrio de la Cruz ($30)</option>
+                        <option value="Benito Juárez">Benito Juárez ($50)</option>
+                        <option value="Emiliano Zapata">Emiliano Zapata ($50)</option>
+                        <option value="Lázaro Cárdenas">Lázaro Cárdenas ($80)</option>
+                        <option value="Otra">Otra colonia ($80)</option>
+                    </select>
+                </div>
+
                 <div class="row">
                     <div class="input-group" style="flex: 2;">
-                        <label>Calle y Colonia</label>
+                        <label>Calle</label>
                         <input type="text" id="del-calle" required>
                     </div>
                     <div class="input-group" style="flex: 1;">
@@ -88,7 +105,9 @@
                     <label>Especificaciones para el repartidor (Opcional)</label>
                     <textarea id="del-notas" rows="2" placeholder="Ej. Edificio blanco, depto 4..."></textarea>
                 </div>
+
                 <hr style="margin: 15px 0; border: 1px dashed var(--border-color);">
+
                 <div class="input-group">
                     <label>Método de pago</label>
                     <select id="payment-method" class="payment-select">
@@ -115,13 +134,12 @@
         </div>
     </div>
 
-    <!-- MODAL DEL TICKET (AHORA VISIBLE EN PANTALLA) -->
+    <!-- MODAL DEL TICKET CON DESGLOSE DE ENVÍO -->
     <div id="ticket-modal" class="modal-overlay hidden">
         <div class="modal-content" style="text-align:center;">
             <h3 style="color:var(--verde); margin-bottom: 10px;"><i class="fa-solid fa-circle-check"></i> ¡Pago Exitoso!</h3>
             <p>Revisa tu comprobante y descárgalo.</p>
             
-            <!-- TICKET VISIBLE EN PANTALLA -->
             <div id="ticket-pdf-area" style="padding:20px; background:white; color:black; width:100%; max-width:320px; margin:15px auto; text-align:left; font-family: Arial, sans-serif; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                 <h2 style="font-family:Georgia; text-align:center; margin-bottom:5px;">Saberes Artesanales</h2>
                 <p style="text-align:center; font-size:10px; margin-bottom:15px;">de la Vainilla</p>
@@ -138,7 +156,14 @@
                 <div id="ticket-items" style="font-size:12px; margin-bottom: 10px;"></div>
                 
                 <hr style="margin:10px 0; border-top: 1px dashed #000;">
-                <h3 style="text-align:right;">Total Pagado: <span id="ticket-total"></span></h3>
+                
+                <!-- DESGLOSE DE COSTOS -->
+                <div style="text-align:right; font-size:14px; margin-bottom: 5px;">
+                    <p>Subtotal: <span id="ticket-subtotal"></span></p>
+                    <p>Costo de Envío: <span id="ticket-envio"></span></p>
+                </div>
+                
+                <h3 style="text-align:right; border-top: 1px solid #000; padding-top: 10px; margin-top: 10px;">Total Pagado: <span id="ticket-total"></span></h3>
                 
                 <div style="text-align:center; margin-top: 25px;">
                     <p style="font-size:12px; font-style:italic;">"El aroma de nuestra historia, el sabor de nuestra tradición."</p>
@@ -146,7 +171,6 @@
                 </div>
             </div>
             
-            <!-- BOTONES DE ACCIÓN -->
             <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
                 <button class="btn btn-primary full-width" onclick="descargarTicketPDF()">
                     <i class="fa-solid fa-download"></i> Descargar Ticket PDF
