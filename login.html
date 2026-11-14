@@ -40,11 +40,20 @@
                     </div>
                 </div>
 
+                <!-- FORMULARIO DE LOGIN -->
                 <div id="form-login" class="auth-form-container hidden">
                     <h3 style="text-align: center; margin-bottom: 25px; color: var(--texto-main); font-family: Georgia, serif; font-size: 1.5rem;">Iniciar Sesión</h3>
                     <form onsubmit="event.preventDefault(); loginCliente();">
                         <div class="input-group"><label>Teléfono</label><input type="tel" id="log-tel" required placeholder="Ej. 7841234567"></div>
-                        <div class="input-group"><label>Contraseña</label><input type="password" id="log-pass" required></div>
+                        
+                        <div class="input-group">
+                            <label>Contraseña</label>
+                            <div class="password-wrapper" style="position: relative;">
+                                <input type="password" id="log-pass" required style="padding-right: 40px;">
+                                <i class="fa-solid fa-eye" onclick="togglePassword('log-pass', this)" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--texto-muted);"></i>
+                            </div>
+                        </div>
+                        
                         <button type="submit" class="btn btn-primary full-width mt-10">Entrar</button>
                     </form>
                     <p style="text-align: center; margin-top: 20px; font-size: 0.95rem; cursor: pointer; color: var(--dorado); font-weight: bold;" onclick="volverAlInicioAuth()">
@@ -52,13 +61,43 @@
                     </p>
                 </div>
 
+                <!-- FORMULARIO DE REGISTRO -->
                 <div id="form-register" class="auth-form-container hidden">
                     <h3 style="text-align: center; margin-bottom: 25px; color: var(--texto-main); font-family: Georgia, serif; font-size: 1.5rem;">Crear Cuenta</h3>
                     <form onsubmit="event.preventDefault(); registerCliente();">
                         <div class="input-group"><label>Nombre Completo</label><input type="text" id="reg-nombre" required></div>
                         <div class="input-group"><label>Teléfono</label><input type="tel" id="reg-tel" required></div>
-                        <div class="input-group"><label>Contraseña</label><input type="password" id="reg-pass" required></div>
-                        <div class="input-group"><label>Calle y Colonia</label><input type="text" id="reg-calle" required></div>
+                        
+                        <div class="input-group">
+                            <label>Contraseña</label>
+                            <div class="password-wrapper" style="position: relative;">
+                                <input type="password" id="reg-pass" required style="padding-right: 40px;">
+                                <i class="fa-solid fa-eye" onclick="togglePassword('reg-pass', this)" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--texto-muted);"></i>
+                            </div>
+                        </div>
+
+                        <!-- SELECTOR DE COLONIA -->
+                        <div class="input-group">
+                            <label>Colonia</label>
+                            <select id="reg-colonia" required onchange="mostrarOtraColonia()">
+                                <option value="">Selecciona tu colonia</option>
+                                <option value="Centro">Centro</option>
+                                <option value="Barrio del Zapote">Barrio del Zapote</option>
+                                <option value="Barrio de la Cruz">Barrio de la Cruz</option>
+                                <option value="Benito Juárez">Benito Juárez</option>
+                                <option value="Emiliano Zapata">Emiliano Zapata</option>
+                                <option value="Lázaro Cárdenas">Lázaro Cárdenas</option>
+                                <option value="Otra">Otra (Escribir mi colonia)</option>
+                            </select>
+                        </div>
+
+                        <!-- INPUT PARA ESCRIBIR OTRA COLONIA (Oculto por defecto) -->
+                        <div class="input-group hidden" id="grupo-otra-colonia">
+                            <label>Escribe tu Colonia</label>
+                            <input type="text" id="reg-otra-colonia">
+                        </div>
+
+                        <div class="input-group"><label>Calle</label><input type="text" id="reg-calle" required></div>
                         <div class="row">
                             <div class="input-group"><label>Número Ext.</label><input type="text" id="reg-num" required></div>
                             <div class="input-group"><label>Interior (Opc.)</label><input type="text" id="reg-int"></div>
@@ -72,19 +111,14 @@
                 </div>
             </div>
 
-            <!-- PANEL DE USUARIO LOGUEADO CON HISTORIAL -->
             <div id="auth-user" class="auth-form-container hidden" style="text-align:center;">
                 <h3>Hola, <span id="user-name-display"></span></h3>
                 <p>¿Qué deseas hacer hoy?</p>
-                
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button class="btn btn-primary full-width" onclick="window.location.href='menu.html'"><i class="fa-solid fa-utensils"></i> Pedir Comida</button>
                     <button class="btn btn-secondary full-width" onclick="cargarMisCompras()"><i class="fa-solid fa-clock-rotate-left"></i> Mis Compras</button>
                 </div>
-
-                <!-- Aquí se inyectará el historial -->
                 <div id="historial-compras" style="margin-top: 25px; text-align: left; display: none;"></div>
-                
                 <button class="btn btn-secondary full-width mt-10" style="margin-top: 30px; background: transparent; border: 1px solid var(--border-color); color: var(--texto-muted);" onclick="cerrarSesionCliente()">Cerrar Sesión</button>
             </div>
         </main>
