@@ -86,7 +86,6 @@ async function cargarMisCompras() {
         let html = '<h4 style="color:var(--texto-main); margin-bottom:15px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">Tus Pedidos Recientes</h4>';
         
         pedidos.forEach(p => {
-            // Sanitización extrema: Si detecta "null", lo cambia por "Platillo"
             let itemsLimpios = (p.items && p.items !== 'null') ? p.items : 'Sin detalles';
             itemsLimpios = itemsLimpios.replace(/null/gi, 'Platillo'); 
 
@@ -228,7 +227,7 @@ function cargarMenu() {
 
         return `
         <div class="card-food" data-cat="${platillo.categoria}">
-            <img src="${imgFinal}" alt="${nombreFinal}">
+            <img src="${imgFinal}" alt="${nombreFinal}" onerror="this.src='https://images.unsplash.com/photo-1544025162-811114215b2b'">
             <div class="card-food-body">
                 <h3>${nombreFinal}</h3>
                 <p>${descFinal}</p>
@@ -278,7 +277,6 @@ function confirmarCustomizacion() {
 }
 
 function agregarDirecto(platillo, selecciones) {
-    // AQUÍ LIMPIAMOS EL NOMBRE ANTES DE GUARDARLO
     let nombreBase = platillo.nombre;
     if (!nombreBase || nombreBase === 'null' || nombreBase.trim() === '') {
         nombreBase = 'Platillo de la casa';
@@ -307,6 +305,13 @@ function actualizarBotonCarrito() {
 
 function abrirCarrito() {
     if(Object.keys(carrito).length === 0) return alert("El carrito está vacío");
+    
+    // VALIDACIÓN VISUAL: Si no hay sesión, mostramos el aviso elegante
+    if (!clienteData) {
+        mostrarAvisoLogin();
+        return; 
+    }
+
     document.getElementById('payment-step-1').classList.remove('hidden');
     document.getElementById('payment-step-card').classList.add('hidden');
 
@@ -357,9 +362,7 @@ function guardarCarritoYRecargar() {
    ========================================= */
 function irAPago() {
     if (!clienteData) {
-        if(confirm("Para completar tu pedido necesitas iniciar sesión o crear una cuenta. ¿Deseas ir ahora?")) {
-            window.location.href = 'login.html';
-        }
+        mostrarAvisoLogin();
         return;
     }
     
@@ -380,7 +383,7 @@ function volverAPaso1() {
 
 async function procesarPago(event) {
     const metodo = document.getElementById('payment-method').value;
-    const carritoGuardado = JSON.parse(JSON.stringify(carrito)); // Guardamos copia
+    const carritoGuardado = JSON.parse(JSON.stringify(carrito)); 
     const total = Object.values(carritoGuardado).reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
     
     const telEntrega = document.getElementById('del-tel').value.trim();
@@ -418,7 +421,6 @@ async function procesarPago(event) {
             actualizarBotonCarrito();
             cerrarCarrito();
             
-            // Llenamos el ticket
             const numFolio = data.pedido_id;
             const fechaActual = new Date().toLocaleString();
             document.getElementById('ticket-folio').innerText = `#${numFolio}`;
@@ -468,19 +470,18 @@ function descargarTicketPDF() {
     
     html2pdf().set(opt).from(element).save();
 }
+
 /* =========================================
-   NARRADOR DE ALTA CALIDAD (HUMANO)
+   NARRADOR (SÍNTESIS DE VOZ) PARA CONÓCENOS
    ========================================= */
 let reproduciendoNarracion = false;
 let sintetizador = window.speechSynthesis;
 let utterance = null;
 
-// Buscar la voz más natural disponible en el dispositivo
 function obtenerVozDeCalidad() {
     const voces = sintetizador.getVoices();
     const vocesEspanol = voces.filter(voz => voz.lang.includes('es'));
     
-    // 1. Buscamos voces "Neural" (Edge) o "Premium" (Apple)
     const vozPremium = vocesEspanol.find(v => 
         v.name.toLowerCase().includes('neural') || 
         v.name.toLowerCase().includes('premium') || 
@@ -488,14 +489,12 @@ function obtenerVozDeCalidad() {
     );
     if (vozPremium) return vozPremium;
 
-    // 2. Buscamos las voces conocidas por ser buenas (Mónica, Paulina, Sabina, etc.)
     const nombresBuenos = ['Paulina', 'Sabina', 'Mónica', 'Monica', 'Helena', 'Luciana', 'Google español'];
     for (let nombre of nombresBuenos) {
         const encontrada = vocesEspanol.find(v => v.name.includes(nombre));
         if (encontrada) return encontrada;
     }
 
-    // 3. Respaldo: la primera voz en español
     return vocesEspanol.length > 0 ? vocesEspanol[0] : null;
 }
 
@@ -518,11 +517,9 @@ function controlarNarrador() {
 
     utterance = new SpeechSynthesisUtterance(texto);
     utterance.lang = 'es-MX';
-    
-    // Ajustes para que suene natural y pausado
-    utterance.rate = 0.85;  // Velocidad más lenta (0.85) para que no suene apresurado
-    utterance.pitch = 1.0;  // Tono normal (sin robotizar)
-    utterance.volume = 1.0; // Volumen máximo
+    utterance.rate = 0.85; 
+    utterance.pitch = 1.0; 
+    utterance.volume = 1.0;
 
     const vozElegida = obtenerVozDeCalidad();
     if (vozElegida) {
@@ -543,4 +540,38 @@ function controlarNarrador() {
 
 if (speechSynthesis.onvoiceschanged !== undefined) {
     speechSynthesis.onvoiceschanged = obtenerVozDeCalidad;
+}
+
+/* =========================================
+   AVISO DE LOGIN REQUERIDO (MODAL VISUAL)
+   ========================================= */
+function mostrarAvisoLogin() {
+    if (document.getElementById('login-warning-modal')) return;
+
+    const modalHTML = `
+        <div id="login-warning-modal" class="modal-overlay">
+            <div class="modal-content" style="text-align: center; border-radius: 20px; max-width: 400px; margin: auto;">
+                <i class="fa-solid fa-lock" style="font-size: 3.5rem; color: var(--dorado); margin-bottom: 15px;"></i>
+                <h3 style="color: var(--texto-main); margin-bottom: 10px; font-family: Georgia, serif;">Inicia Sesión</h3>
+                <p style="color: var(--texto-muted); margin-bottom: 25px; font-size: 1rem; line-height: 1.5;">
+                    Para ver tu carrito y realizar tu pedido, primero necesitas iniciar sesión o crear una cuenta.
+                </p>
+                <button class="btn btn-primary full-width" onclick="window.location.href='login.html'">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Ir a Iniciar Sesión
+                </button>
+                <button class="btn btn-secondary full-width mt-10" onclick="cerrarModalAviso()">
+                    Seguir explorando
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+function cerrarModalAviso() {
+    const modal = document.getElementById('login-warning-modal');
+    if (modal) {
+        modal.remove();
+    }
 }
