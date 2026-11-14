@@ -7,176 +7,55 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* =========================================
-           ESTILOS EXCLUSIVOS PARA CONÓCENOS
-           ========================================= */
-        
-        /* Contenedor principal */
-        .conocenos-container {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
+        .conocenos-container { display: flex; flex-direction: column; gap: 30px; }
+        .img-responsive { width: 100%; height: 250px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); border: 2px solid var(--border-color); }
+        .history-grid { display: flex; flex-direction: column; gap: 15px; }
+        .logo-features { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 15px; }
+        .feature-item { background: var(--bg-app); padding: 15px; border-radius: 10px; display: flex; align-items: flex-start; gap: 15px; border: 1px solid var(--border-color); }
+        .visit-grid { display: flex; flex-direction: column; gap: 20px; }
+        .contact-grid { display: flex; flex-direction: column; gap: 20px; background: var(--bg-card); border-radius: 15px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
+        .contact-list { padding: 20px; }
+        .contact-item { display: flex; align-items: center; text-decoration: none; color: inherit; padding: 15px 0; border-bottom: 1px solid var(--border-color); transition: 0.2s; }
+        .contact-item:hover { background: rgba(255,255,255,0.05); border-radius: 8px; padding-left: 10px; }
+        .contact-item:last-child { border-bottom: none; }
+        .contact-icon { font-size: 1.5rem; color: var(--verde); width: 40px; text-align: center; }
+        .contact-info { flex: 1; margin-left: 15px; }
+        .contact-title { display: block; font-size: 1.1rem; color: var(--texto-main); font-weight: 600; margin-bottom: 2px; }
+        .contact-subtitle { color: var(--texto-muted); font-size: 0.95rem; }
+        .contact-arrow { color: var(--texto-muted); font-size: 0.9rem; }
+
+        /* ESTILOS DEL BOTÓN DEL NARRADOR */
+        .btn-narrador {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            background: var(--verde); color: white; border: none; padding: 15px 25px;
+            border-radius: 30px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
+            transition: 0.3s; margin: 20px auto 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .btn-narrador:hover { background: #6a7a47; transform: translateY(-2px); }
+        .btn-narrador.playing { background: #d9534f; animation: pulse 1.5s infinite; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(217, 83, 79, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(217, 83, 79, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(217, 83, 79, 0); }
         }
 
-        /* Imágenes responsivas y grandes */
-        .img-responsive {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            border: 2px solid var(--border-color);
-        }
-
-        /* Sección de Historia (Texto e Imagen) */
-        .history-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        /* Sección del Logo (4 íconos) */
-        .logo-features {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .feature-item {
-            background: var(--bg-app);
-            padding: 15px;
-            border-radius: 10px;
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        /* Sección de Mapas */
-        .visit-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Sección de Contacto */
-        .contact-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            background: var(--bg-card);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-        .contact-list {
-            padding: 20px;
-        }
-        .contact-item {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: inherit;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border-color);
-            transition: 0.2s;
-        }
-        .contact-item:hover {
-            background: var(--bg-app);
-            padding-left: 10px;
-            border-radius: 8px;
-        }
-        .contact-item:last-child {
-            border-bottom: none;
-        }
-        .contact-icon {
-            font-size: 1.5rem;
-            color: var(--dorado);
-            width: 40px;
-            text-align: center;
-        }
-        .contact-info {
-            flex: 1;
-            margin-left: 15px;
-        }
-        .contact-title {
-            display: block;
-            font-size: 1.1rem;
-            color: var(--texto-main);
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-        .contact-subtitle {
-            color: var(--texto-muted);
-            font-size: 0.95rem;
-        }
-        .contact-arrow {
-            color: var(--texto-muted);
-            font-size: 0.9rem;
-        }
-
-        /* =========================================
-           DISEÑO PARA LAPTOP Y PC (min-width: 1024px)
-           ========================================= */
         @media (min-width: 1024px) {
-            .conocenos-container {
-                max-width: 1100px;
-                margin: 0 auto; /* Centra todo el contenido */
-            }
-
-            /* Imagen de la historia más grande */
-            .img-responsive {
-                height: 400px;
-            }
-
-            /* Historia en 2 columnas (imagen izquierda, texto derecha) */
-            .history-grid {
-                flex-direction: row;
-                align-items: center;
-                gap: 40px;
-            }
-            .history-grid .img-wrapper {
-                flex: 1;
-            }
-            .history-grid .text-wrapper {
-                flex: 1;
-            }
-
-            /* El logo en 4 columnas */
-            .logo-features {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 20px;
-            }
-
-            /* Los mapas lado a lado */
-            .visit-grid {
-                flex-direction: row;
-                gap: 30px;
-            }
-            .visit-grid > div {
-                flex: 1;
-            }
-
-            /* El contacto en 2 columnas (imagen izquierda, datos derecha) */
-            .contact-grid {
-                flex-direction: row;
-            }
-            .contact-grid > img {
-                width: 50%;
-                height: auto;
-                object-fit: cover;
-            }
-            .contact-list {
-                width: 50%;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-            }
+            .conocenos-container { max-width: 1100px; margin: 0 auto; }
+            .img-responsive { height: 400px; }
+            .history-grid { flex-direction: row; align-items: center; gap: 40px; }
+            .history-grid .img-wrapper { flex: 1; }
+            .history-grid .text-wrapper { flex: 1; }
+            .logo-features { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+            .visit-grid { flex-direction: row; gap: 30px; }
+            .visit-grid > div { flex: 1; }
+            .contact-grid { flex-direction: row; }
+            .contact-grid > img { width: 50%; height: auto; object-fit: cover; }
+            .contact-list { width: 50%; display: flex; flex-direction: column; justify-content: center; }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- CABECERA -->
         <header class="app-header">
             <div class="logo-area" onclick="window.location.href='index.html'">
                 <img src="logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/75/C58B45/FFFFFF?text=S'">
@@ -193,20 +72,29 @@
         <main class="app-content">
             <div class="conocenos-container">
                 
-                <!-- SECCIÓN 1: INTRO Y SLOGAN (Banner) -->
+                <!-- SECCIÓN 1: INTRO Y SLOGAN CON BOTÓN DE NARRADOR -->
                 <div class="info-card" style="text-align: center; background: linear-gradient(rgba(74, 48, 37, 0.9), rgba(74, 48, 37, 0.9)), url('https://images.unsplash.com/photo-1598514982205-f36b96d1e8d4'); background-size: cover; background-position: center; color: var(--crema); padding: 40px 20px;">
                     <h1 style="font-family: Georgia, serif; font-size: 2.2rem; margin-bottom: 15px; color: var(--dorado);">"El aroma de nuestra historia, el sabor de nuestra tradición"</h1>
                     <p style="font-size: 1.1rem; max-width: 700px; margin: 0 auto;">Conoce el legado familiar, la cultura y la pasión que hay detrás de cada platillo que preparamos para ti.</p>
+                    
+                    <button id="btn-narrador" class="btn-narrador" onclick="controlarNarrador()">
+                        <i class="fa-solid fa-volume-high"></i> Escuchar Historia
+                    </button>
                 </div>
 
-                <!-- SECCIÓN 2: HISTORIA FAMILIAR -->
+                <!-- SECCIÓN 2: HISTORIA FAMILIAR CON TEXTO OCULTO PARA EL NARRADOR -->
                 <h2 class="section-title">Nuestra Historia</h2>
+                
+                <div id="texto-narracion" style="display: none;">
+    Nuestra historia... se remonta a nuestros bisabuelos y abuelos, quienes trabajaron en la época de mayor auge de la vainilla junto a la familia Tremari. De ellos aprendimos el arte del cultivo, la cosecha... y el beneficio tradicional para secar las vainas y despertar su aroma. La segunda generación, integrada por nuestros padres y tíos, continuó la tradición y fundó Vailipap... Vainilla y Licores de Papantla, una marca con más de veinte años de trayectoria. Hoy, la generación actual decidió abrir las puertas de este proyecto familiar. Así nació Saberes Ancestrales de la Vainilla... un espacio donde la gastronomía, la artesanía y la historia se unen... para mostrarte el verdadero valor de nuestra tierra.
+</div>
+
                 <div class="history-grid">
                     <div class="img-wrapper">
                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwzfvdLH1TzBTT8ViwcJU6wkN2vRgZNaHvNCVM7sRlFg&s=10" alt="Historia de la Vainilla" class="img-responsive">
                     </div>
                     <div class="text-wrapper">
-                        <h3 style="font-size: 1.4rem; color: var(--cafe); margin-bottom: 15px;">Una Tradición de Generaciones</h3>
+                        <h3 style="font-size: 1.4rem; color: var(--texto-main); margin-bottom: 15px;">Una Tradición de Generaciones</h3>
                         <p style="margin-bottom: 15px; text-align: justify; font-size: 1rem; line-height: 1.6;">Nuestra historia se remonta a nuestros bisabuelos y abuelos, quienes trabajaron en la época de mayor auge de la vainilla junto a la familia Tremari. De ellos aprendimos el arte del cultivo, la cosecha y el beneficio tradicional para secar las vainas y despertar su aroma.</p>
                         <p style="margin-bottom: 15px; text-align: justify; font-size: 1rem; line-height: 1.6;">La segunda generación, integrada por nuestros padres y tíos, continuó la tradición y fundó <strong>Vailipap, Vainilla y Licores de Papantla</strong>, una marca con más de veinte años de trayectoria dedicada a transformar esta joya agrícola en productos únicos.</p>
                         <p style="text-align: justify; font-size: 1rem; line-height: 1.6;">Hoy, la generación actual decidió abrir las puertas de este proyecto familiar. Así nació <strong>Saberes Ancestrales de la Vainilla</strong>: un espacio donde la gastronomía, la artesanía y la historia se unen para mostrarte el verdadero valor de nuestra tierra.</p>
@@ -222,7 +110,7 @@
                         <div class="feature-item">
                             <i class="fa-solid fa-house" style="color: var(--dorado); font-size: 1.8rem;"></i>
                             <div>
-                                <strong style="color: var(--cafe); font-size: 1.1rem; display: block; margin-bottom: 5px;">La Casita (El Museo)</strong>
+                                <strong style="color: var(--texto-main); font-size: 1.1rem; display: block; margin-bottom: 5px;">La Casita (El Museo)</strong>
                                 <p style="font-size: 0.95rem; color: var(--texto-muted); line-height: 1.4;">Conserva fotografías antiguas y herramientas que narran la historia de la vainilla.</p>
                             </div>
                         </div>
@@ -230,7 +118,7 @@
                         <div class="feature-item">
                             <i class="fa-solid fa-hands" style="color: var(--dorado); font-size: 1.8rem;"></i>
                             <div>
-                                <strong style="color: var(--cafe); font-size: 1.1rem; display: block; margin-bottom: 5px;">Las Manos (Los Talleres)</strong>
+                                <strong style="color: var(--texto-main); font-size: 1.1rem; display: block; margin-bottom: 5px;">Las Manos (Los Talleres)</strong>
                                 <p style="font-size: 0.95rem; color: var(--texto-muted); line-height: 1.4;">Representan el trabajo artesanal y la transmisión de conocimientos.</p>
                             </div>
                         </div>
@@ -238,7 +126,7 @@
                         <div class="feature-item">
                             <i class="fa-solid fa-fire" style="color: var(--dorado); font-size: 1.8rem;"></i>
                             <div>
-                                <strong style="color: var(--cafe); font-size: 1.1rem; display: block; margin-bottom: 5px;">El Fogón (La Cocina)</strong>
+                                <strong style="color: var(--texto-main); font-size: 1.1rem; display: block; margin-bottom: 5px;">El Fogón (La Cocina)</strong>
                                 <p style="font-size: 0.95rem; color: var(--texto-muted); line-height: 1.4;">Simboliza la unión de la gastronomía y la tradición.</p>
                             </div>
                         </div>
@@ -246,7 +134,7 @@
                         <div class="feature-item">
                             <i class="fa-solid fa-leaf" style="color: var(--dorado); font-size: 1.8rem;"></i>
                             <div>
-                                <strong style="color: var(--cafe); font-size: 1.1rem; display: block; margin-bottom: 5px;">Las Guías (Los Sembradíos)</strong>
+                                <strong style="color: var(--texto-main); font-size: 1.1rem; display: block; margin-bottom: 5px;">Las Guías (Los Sembradíos)</strong>
                                 <p style="font-size: 0.95rem; color: var(--texto-muted); line-height: 1.4;">El origen de todo: el cultivo y los conocimientos agrícolas heredados.</p>
                             </div>
                         </div>
@@ -258,7 +146,6 @@
                 <p style="text-align: center; margin-bottom: 20px; font-size: 1rem; color: var(--texto-muted);">Te esperamos en Papantla. Toca el botón para ver la ubicación exacta en Google Maps.</p>
 
                 <div class="visit-grid">
-                    <!-- Centro Turístico -->
                     <div class="info-card" style="border-left: 5px solid var(--dorado);">
                         <h3 style="font-size: 1.2rem; margin-bottom: 15px;"><i class="fa-solid fa-tree" style="color: var(--verde);"></i> Centro Turístico</h3>
                         <img src="https://img.restaurantguru.com/r085-design-Centro-Turistico-Saberes-Ancestrales-de-la-Vainilla-2022-09.jpg" alt="Centro Turístico" class="img-responsive" style="height: 220px; margin-bottom: 15px;">
@@ -268,7 +155,6 @@
                         </a>
                     </div>
 
-                    <!-- Restaurante -->
                     <div class="info-card" style="border-left: 5px solid var(--dorado);">
                         <h3 style="font-size: 1.2rem; margin-bottom: 15px;"><i class="fa-solid fa-utensils" style="color: var(--dorado);"></i> Restaurante</h3>
                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_yNnZ3Bwen6vySOdE4tG2aaPSbmkBBdI9GcRNLlF7XfSuHzixDFV2ieHK&s=10" alt="Restaurante" class="img-responsive" style="height: 220px; margin-bottom: 15px;">
@@ -286,10 +172,8 @@
                 </p>
 
                 <div class="contact-grid">
-                    <!-- Foto del restaurante -->
                     <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/29/f5/90/c8/caption.jpg?w=1200&h=-1&s=1" alt="Interior del Restaurante">
                     
-                    <!-- Lista de contactos -->
                     <div class="contact-list">
                         <a href="tel:7841150077" class="contact-item">
                             <i class="fa-solid fa-phone contact-icon"></i>
@@ -329,7 +213,6 @@
                     </div>
                 </div>
 
-                <!-- Botón Final -->
                 <div style="text-align: center; margin-top: 10px; margin-bottom: 30px;">
                     <a href="tel:7841150077" class="btn btn-primary full-width" style="padding: 15px; font-size: 1.1rem; text-decoration: none; display: inline-block; border-radius: 30px; width: 100%; max-width: 400px;">
                         <i class="fa-solid fa-phone"></i> Contáctanos Ahora
@@ -339,7 +222,6 @@
             </div>
         </main>
 
-        <!-- NAVEGACIÓN INFERIOR -->
         <nav class="bottom-nav">
             <a href="index.html" class="nav-item"><span class="icon"><i class="fa-solid fa-house"></i></span><span class="label">Inicio</span></a>
             <a href="menu.html" class="nav-item"><span class="icon"><i class="fa-solid fa-utensils"></i></span><span class="label">Menú</span></a>
