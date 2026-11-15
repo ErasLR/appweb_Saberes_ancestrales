@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Cuenta - Saberes App</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -25,15 +25,17 @@
         <main class="app-content">
             <div id="auth-guest">
                 <div id="auth-initial-view">
+                    <!-- Tarjeta Café -->
                     <div class="auth-card-brown">
-                        <div class="auth-icon-circle"><i class="fa-solid fa-user-plus"></i></div>
+                        <i class="fa-solid fa-user-plus auth-icon"></i>
                         <h3>¿Eres nuevo?</h3>
                         <p>Crea una cuenta para comenzar a realizar tus pedidos.</p>
                         <button class="btn-auth-cream" onclick="mostrarForm('register')">Crear una cuenta</button>
                     </div>
 
+                    <!-- Tarjeta Blanca -->
                     <div class="auth-card-white">
-                        <div class="auth-icon-circle-outline"><i class="fa-solid fa-arrow-right-to-bracket"></i></div>
+                        <i class="fa-solid fa-arrow-right-to-bracket auth-icon-brown"></i>
                         <h3>¿Ya tienes una cuenta?</h3>
                         <p>Inicia sesión y continúa con tus pedidos.</p>
                         <button class="btn-auth-green" onclick="mostrarForm('login')">Iniciar sesión</button>
@@ -42,7 +44,9 @@
 
                 <!-- FORMULARIO DE LOGIN -->
                 <div id="form-login" class="auth-form-container hidden">
-                    <h3 style="text-align: center; margin-bottom: 25px; color: var(--texto-main); font-family: Georgia, serif; font-size: 1.5rem;">Iniciar Sesión</h3>
+                    <div class="auth-form-header">
+                        <h3>Iniciar Sesión</h3>
+                    </div>
                     <form onsubmit="event.preventDefault(); loginCliente();">
                         <div class="input-group"><label>Teléfono</label><input type="tel" id="log-tel" required placeholder="Ej. 7841234567"></div>
                         
@@ -51,6 +55,15 @@
                             <div class="password-wrapper" style="position: relative;">
                                 <input type="password" id="log-pass" required style="padding-right: 40px;">
                                 <i class="fa-solid fa-eye" onclick="togglePassword('log-pass', this)" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--texto-muted);"></i>
+                            </div>
+                        </div>
+
+                        <!-- CAPTCHA LOGIN -->
+                        <div class="input-group">
+                            <label>Verificación humana</label>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <span id="captcha-login-pregunta" style="background:var(--bg-app); padding:14px; border-radius:10px; font-weight:bold; color:var(--texto-main); border:1px solid var(--border-color); white-space:nowrap;"></span>
+                                <input type="number" id="captcha-login-respuesta" required placeholder="Respuesta" style="flex:1;">
                             </div>
                         </div>
                         
@@ -63,7 +76,9 @@
 
                 <!-- FORMULARIO DE REGISTRO -->
                 <div id="form-register" class="auth-form-container hidden">
-                    <h3 style="text-align: center; margin-bottom: 25px; color: var(--texto-main); font-family: Georgia, serif; font-size: 1.5rem;">Crear Cuenta</h3>
+                    <div class="auth-form-header">
+                        <h3>Crear Cuenta</h3>
+                    </div>
                     <form onsubmit="event.preventDefault(); registerCliente();">
                         <div class="input-group"><label>Nombre Completo</label><input type="text" id="reg-nombre" required></div>
                         <div class="input-group"><label>Teléfono</label><input type="tel" id="reg-tel" required></div>
@@ -76,7 +91,6 @@
                             </div>
                         </div>
 
-                        <!-- SELECTOR DE COLONIA -->
                         <div class="input-group">
                             <label>Colonia</label>
                             <select id="reg-colonia" required onchange="mostrarOtraColonia()">
@@ -91,7 +105,6 @@
                             </select>
                         </div>
 
-                        <!-- INPUT PARA ESCRIBIR OTRA COLONIA (Oculto por defecto) -->
                         <div class="input-group hidden" id="grupo-otra-colonia">
                             <label>Escribe tu Colonia</label>
                             <input type="text" id="reg-otra-colonia">
@@ -103,6 +116,16 @@
                             <div class="input-group"><label>Interior (Opc.)</label><input type="text" id="reg-int"></div>
                         </div>
                         <div class="input-group"><label>Referencias (Para el repartidor)</label><textarea id="reg-ref" rows="2" placeholder="Ej. Casa de dos pisos, portón negro..."></textarea></div>
+
+                        <!-- CAPTCHA REGISTRO -->
+                        <div class="input-group">
+                            <label>Verificación humana</label>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <span id="captcha-register-pregunta" style="background:var(--bg-app); padding:14px; border-radius:10px; font-weight:bold; color:var(--texto-main); border:1px solid var(--border-color); white-space:nowrap;"></span>
+                                <input type="number" id="captcha-register-respuesta" required placeholder="Respuesta" style="flex:1;">
+                            </div>
+                        </div>
+
                         <button type="submit" class="btn btn-primary full-width mt-10">Registrarme</button>
                     </form>
                     <p style="text-align: center; margin-top: 20px; font-size: 0.95rem; cursor: pointer; color: var(--dorado); font-weight: bold;" onclick="volverAlInicioAuth()">
