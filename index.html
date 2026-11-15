@@ -1,12 +1,31 @@
-
-</html><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saberes App - Restaurante</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- =======================================================
+         LINK DE LA IMAGEN DE VAINILLA (GUARDADO AQUÍ PARA NO PERDERLO):
+         https://jardindelzen.com/wp-content/uploads/2016/12/vainilla-1024x768.jpg
+         ======================================================= -->
+    
+    <style>
+        /* Forzamos la imagen de la vainilla en el Hero de esta página */
+        .hero-app {
+            background-image: linear-gradient(rgba(74, 48, 37, 0.9), rgba(74, 48, 37, 0.9)), url('https://jardindelzen.com/wp-content/uploads/2016/12/vainilla-1024x768.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        /* Ajuste para que en Modo Oscuro (verde) el fondo combine con la paleta */
+        body.dark-mode .hero-app {
+            background-image: linear-gradient(rgba(15, 20, 17, 0.85), rgba(15, 20, 17, 0.85)), url('https://jardindelzen.com/wp-content/uploads/2016/12/vainilla-1024x768.jpg');
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
@@ -26,11 +45,14 @@
 
         <!-- CONTENIDO -->
         <main class="app-content">
+            <!-- HERO con la imagen de la vainilla asegurada desde el <style> de arriba -->
             <div class="hero-app">
                 <h1>El auténtico sabor de Papantla</h1>
                 <p>Disfruta de nuestros platillos preparados con vainilla natural.</p>
                 <button class="btn btn-primary" onclick="window.location.href='menu.html'">Ordenar Ahora</button>
             </div>
+
+            <!-- Info card -->
             <div class="info-card">
                 <h3>Bienvenido a Saberes de la Vainilla</h3>
                 <p>Somos un restaurante familiar dedicado a preservar la tradición de la vainilla. Ingresa para ordenar a domicilio.</p>
