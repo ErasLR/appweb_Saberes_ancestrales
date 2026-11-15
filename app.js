@@ -7,6 +7,9 @@ let itemEnPersonalizacion = null;
 let clienteData = null;
 let costoEnvioActual = 0;
 
+/* FIX 2.1/5.4 — Respuestas correctas de los 3 CAPTCHAs */
+const captchas = { login: 0, register: 0, pedido: 0 };
+
 /* =========================================
    INICIALIZACIÓN
    ========================================= */
@@ -15,10 +18,38 @@ window.onload = function() {
         document.body.classList.add('dark-mode');
         if(document.getElementById('theme-btn')) document.getElementById('theme-btn').innerHTML = '<i class="fa-solid fa-sun"></i>';
     }
+    
     checkSession();
+    
     if (document.getElementById('contenedor-menu')) fetchMenu();
     if (document.getElementById('cart-count')) actualizarBotonCarrito();
 };
+
+/* =========================================
+   FIX 2.1/5.4 — CAPTCHA MATEMÁTICO
+   ========================================= */
+function generarCaptcha(tipo) {
+    const a = Math.floor(Math.random() * 9) + 1;
+    const b = Math.floor(Math.random() * 9) + 1;
+    captchas[tipo] = a + b;
+
+    const pregunta = document.getElementById(`captcha-${tipo}-pregunta`);
+    const respuesta = document.getElementById(`captcha-${tipo}-respuesta`);
+    if (pregunta) pregunta.innerText = `${a} + ${b} = ?`;
+    if (respuesta) respuesta.value = '';
+}
+
+function validarCaptcha(tipo) {
+    const input = document.getElementById(`captcha-${tipo}-respuesta`);
+    if (!input) return true; // si no existe el CAPTCHA en esta página, no bloquea
+    const valor = parseInt(input.value, 10);
+    if (isNaN(valor) || valor !== captchas[tipo]) {
+        alert("Verificación humana incorrecta. Intenta de nuevo.");
+        generarCaptcha(tipo);
+        return false;
+    }
+    return true;
+}
 
 /* =========================================
    MODO OSCURO Y OJITO DE CONTRASEÑA
@@ -88,6 +119,9 @@ async function checkSession() {
 }
 
 async function loginCliente() {
+    // FIX 2.1/5.4 — validar CAPTCHA primero
+    if (!validarCaptcha('login')) return;
+
     const tel = document.getElementById('log-tel').value;
     const pass = document.getElementById('log-pass').value;
     if(!tel || !pass) return alert("Llena todos los campos");
@@ -103,12 +137,20 @@ async function loginCliente() {
         try { data = JSON.parse(text); } 
         catch (err) { console.error("PHP Error:", text); return alert("Error en el servidor."); }
 
-        if (data.success) { window.location.reload(); } 
-        else { alert(data.error || "Error al iniciar sesión"); }
+        if (data.success) {
+            // FIX 5.3/8.2 — respetar redirección pendiente si venía de una página privada
+            const destino = localStorage.getItem('redir_after_login');
+            localStorage.removeItem('redir_after_login');
+            window.location.href = destino || 'login.html';
+        } 
+        else { alert(data.error || "Error al iniciar sesión"); generarCaptcha('login'); }
     } catch(e) { alert("Error de red: " + e.message); }
 }
 
 async function registerCliente() {
+    // FIX 2.1/5.4 — validar CAPTCHA primero
+    if (!validarCaptcha('register')) return;
+
     let coloniaFinal = document.getElementById('reg-colonia').value;
     if (coloniaFinal === 'Otra') {
         coloniaFinal = document.getElementById('reg-otra-colonia').value.trim();
@@ -138,12 +180,14 @@ async function registerCliente() {
         catch (err) { console.error("PHP Error:", text); return alert("Error en el servidor."); }
 
         if (data.success) { window.location.reload(); } 
-        else { alert(data.error || "Error al registrarse"); }
+        else { alert(data.error || "Error al registrarse"); generarCaptcha('register'); }
     } catch(e) { alert("Error de red: " + e.message); }
 }
 
 async function cerrarSesionCliente() {
     await fetch('api/clientes.php?action=logout', { credentials: 'include' });
+    carrito = {};
+    localStorage.removeItem('carrito');
     window.location.reload();
 }
 
@@ -171,28 +215,17 @@ async function cargarMisCompras() {
             const fecha = (p.fecha && p.fecha !== 'null') ? p.fecha : 'Fecha no disponible';
             const total = (p.total && p.total !== 'null') ? parseFloat(p.total).toFixed(2) : '0.00';
             const direccion = (p.direccion_entrega && p.direccion_entrega !== 'null') ? p.direccion_entrega : '';
-
-            // Se eliminó por completo la lógica del estado (colorEstado, etc.)
             
             html += `
             <div class="info-card" style="margin-bottom: 15px; padding: 15px; border-left: 4px solid var(--dorado);">
-                
-                <!-- Cabecera: Folio y Fecha -->
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed var(--border-color); padding-bottom:8px;">
                     <strong style="color:var(--texto-main); font-size: 1.1rem;">Folio #${folio}</strong>
                     <small style="color:var(--texto-muted);">${fecha}</small>
                 </div>
-                
-                <!-- Lista de Platillos -->
                 <div style="font-size: 0.95rem; color: var(--texto-main); margin-bottom: 12px; line-height: 1.6;">
-                    <strong style="font-size: 0.85rem; color: var(--texto-muted); text-transform: uppercase;">Lo que pediste:</strong><br>
-                    ${itemsLimpios}
+                    <strong style="font-size: 0.85rem; color: var(--texto-muted); text-transform: uppercase;">Lo que pediste:</strong><br>${itemsLimpios}
                 </div>
-
-                <!-- Dirección de Entrega -->
                 ${direccion ? `<div style="font-size: 0.85rem; color: var(--texto-muted); margin-bottom: 12px;"><i class="fa-solid fa-location-dot"></i> Entrega en: ${direccion}</div>` : ''}
-                
-                <!-- Footer: Solo el Total -->
                 <div style="display:flex; justify-content:flex-end; align-items:center; font-size: 0.9rem; margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
                     <strong style="color:var(--verde); font-size:1.2rem;">Total: $${total}</strong>
                 </div>
@@ -208,6 +241,8 @@ function mostrarForm(tipo) {
     document.getElementById('form-register').classList.add('hidden');
     document.getElementById(`form-${tipo}`).classList.remove('hidden');
     document.querySelector('.app-content').scrollTop = 0;
+    // FIX 2.1/5.4 — generar CAPTCHA al abrir el formulario
+    generarCaptcha(tipo);
 }
 
 function volverAlInicioAuth() {
@@ -230,13 +265,15 @@ async function fetchMenu() {
 function cargarMenu() {
     const contenedor = document.getElementById('contenedor-menu');
     if (!MENU_DATA || MENU_DATA.length === 0) { contenedor.innerHTML = "<p style='text-align:center; width:100%;'>No hay platillos disponibles.</p>"; return; }
+    
     contenedor.innerHTML = MENU_DATA.map(platillo => {
         const enCarrito = Object.values(carrito).filter(item => item.id == platillo.id).reduce((sum, item) => sum + item.cantidad, 0);
         const textoBoton = enCarrito > 0 ? `Agregar (${enCarrito})` : `Agregar`;
         const claseBoton = enCarrito > 0 ? 'add-btn btn-added' : 'add-btn';
-        const nombreFinal = (platillo.nombre && platillo.nombre !== 'null') ? platillo.nombre : 'Platillo';
-        const descFinal = (platillo.descripcion && platillo.descripcion !== 'null') ? platillo.descripcion : 'Delicioso platillo.';
-        const imgFinal = (platillo.imagen_url && platillo.imagen_url !== 'null') ? platillo.imagen_url : 'https://images.unsplash.com/photo-1544025162-811114215b2b';
+        
+        const nombreFinal = platillo.nombre || '';
+        const descFinal = platillo.descripcion || '';
+        const imgFinal = platillo.imagen_url || 'https://images.unsplash.com/photo-1544025162-811114215b2b';
 
         return `
         <div class="card-food" data-cat="${platillo.categoria}">
@@ -254,8 +291,10 @@ function cargarMenu() {
 function filtrarMenu(categoria, btn) {
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
     btn.classList.add('active');
+    const cat = categoria.toLowerCase();
     document.querySelectorAll('.card-food').forEach(card => {
-        card.style.display = (categoria === 'Todas' || card.dataset.cat === categoria) ? 'flex' : 'none';
+        const coincide = (cat === 'todas' || card.dataset.cat.toLowerCase() === cat);
+        card.style.display = coincide ? 'flex' : 'none';
     });
 }
 
@@ -311,7 +350,6 @@ function calcularEnvio() {
     
     const colonia = coloniaSelect.value;
     
-    // ZONAS Y COSTOS
     if (colonia === 'Centro' || colonia === 'Barrio del Zapote' || colonia === 'Barrio de la Cruz') {
         costoEnvioActual = 30;
     } else if (colonia === 'Benito Juárez' || colonia === 'Emiliano Zapata') {
@@ -375,6 +413,9 @@ function abrirCarrito() {
         }
     }
 
+    // FIX 2.1/5.4 — generar CAPTCHA del pedido al abrir el carrito
+    generarCaptcha('pedido');
+
     document.getElementById('cart-modal').classList.remove('hidden');
 }
 
@@ -395,6 +436,9 @@ function guardarCarritoYRecargar() {
    ========================================= */
 function irAPago() {
     if (!clienteData) { mostrarAvisoLogin(); return; }
+
+    // FIX 2.1/5.4 — validar CAPTCHA antes de continuar al pago
+    if (!validarCaptcha('pedido')) return;
     
     const metodo = document.getElementById('payment-method').value;
     if (metodo === 'Tarjeta de Crédito' || metodo === 'Tarjeta de Débito') {
@@ -407,32 +451,34 @@ function irAPago() {
 function volverAPaso1() {
     document.getElementById('payment-step-card').classList.add('hidden');
     document.getElementById('payment-step-1').classList.remove('hidden');
+    // FIX 2.1/5.4 — regenerar CAPTCHA al regresar (por si acaso)
+    generarCaptcha('pedido');
 }
 
 async function procesarPago(event) {
     const metodo = document.getElementById('payment-method').value;
-    const carritoGuardado = JSON.parse(JSON.stringify(carrito)); 
-    let subtotal = Object.values(carritoGuardado).reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
-    let granTotal = subtotal + costoEnvioActual;
-    
-    const telEntrega = document.getElementById('del-tel').value.trim();
-    const calleEntrega = document.getElementById('del-calle').value.trim();
-    const numEntrega = document.getElementById('del-num').value.trim(); 
-    const notasEntrega = document.getElementById('del-notas').value.trim();
+    const carritoGuardado = JSON.parse(JSON.stringify(carrito));
 
-    if(!telEntrega || !calleEntrega || !numEntrega) {
-        return alert("Por favor, llena el teléfono, la calle y el número.");
+    const telEntrega    = document.getElementById('del-tel').value.trim();
+    const calleEntrega  = document.getElementById('del-calle').value.trim();
+    const numEntrega    = document.getElementById('del-num').value.trim();
+    const notasEntrega  = document.getElementById('del-notas').value.trim();
+    const coloniaSelect = document.getElementById('del-colonia');
+    const coloniaEntrega = coloniaSelect ? coloniaSelect.value.trim() : '';
+
+    if (!telEntrega || !calleEntrega || !numEntrega || !coloniaEntrega) {
+        return alert("Por favor, llena teléfono, calle, número y selecciona tu colonia.");
     }
 
     const direccionCompleta = `${calleEntrega} #${numEntrega}`;
-    const payload = { 
-        total: granTotal, 
-        costo_envio: costoEnvioActual,
-        metodo_pago: metodo, 
-        carrito: Object.values(carritoGuardado), 
-        telefono_entrega: telEntrega, 
-        direccion_entrega: direccionCompleta, 
-        notas_entrega: notasEntrega 
+
+    const payload = {
+        metodo_pago:       metodo,
+        carrito:           Object.values(carritoGuardado),
+        telefono_entrega:  telEntrega,
+        direccion_entrega: direccionCompleta,
+        colonia_entrega:   coloniaEntrega,
+        notas_entrega:     notasEntrega
     };
 
     let btn = (event && event.target) ? event.target : document.querySelector('#payment-step-1 .btn-primary');
@@ -452,6 +498,10 @@ async function procesarPago(event) {
         catch (err) { alert("Error en el servidor al procesar pago."); btn.innerHTML = textoOriginal; btn.disabled = false; return; }
 
         if (data.success) {
+            const subtotal   = parseFloat(data.subtotal);
+            const costoEnvio = parseFloat(data.costo_envio);
+            const granTotal  = parseFloat(data.total);
+
             carrito = {};
             localStorage.removeItem('carrito');
             actualizarBotonCarrito();
@@ -465,11 +515,11 @@ async function procesarPago(event) {
             document.getElementById('ticket-nombre').innerText = clienteData.nombre;
             document.getElementById('ticket-gracias-nombre').innerText = clienteData.nombre;
             document.getElementById('ticket-tel').innerText = telEntrega;
-            document.getElementById('ticket-dir').innerText = direccionCompleta; 
+            document.getElementById('ticket-dir').innerText = `${direccionCompleta}, ${coloniaEntrega}`;
             document.getElementById('ticket-metodo').innerText = metodo;
             
             document.getElementById('ticket-subtotal').innerText = `$${subtotal.toFixed(2)}`;
-            document.getElementById('ticket-envio').innerText = `$${costoEnvioActual.toFixed(2)}`;
+            document.getElementById('ticket-envio').innerText = `$${costoEnvio.toFixed(2)}`;
             document.getElementById('ticket-total').innerText = `$${granTotal.toFixed(2)}`;
             
             let itemsHtml = '';
@@ -487,6 +537,8 @@ async function procesarPago(event) {
             alert(data.error || "Error al procesar el pago");
             btn.innerHTML = textoOriginal;
             btn.disabled = false;
+            // Regenerar CAPTCHA en caso de error
+            generarCaptcha('pedido');
         }
     } catch (e) { 
         alert("Error de red."); 
@@ -566,7 +618,7 @@ function mostrarAvisoLogin() {
                 <button class="btn btn-secondary full-width mt-10" onclick="cerrarModalAviso()">Seguir explorando</button>
             </div>
         </div>`;
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.querySelector('.app-container').insertAdjacentHTML('beforeend', modalHTML);
 }
 function cerrarModalAviso() {
     const modal = document.getElementById('login-warning-modal');
