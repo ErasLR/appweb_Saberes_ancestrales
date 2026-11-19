@@ -7,7 +7,6 @@ let itemEnPersonalizacion = null;
 let clienteData = null;
 let costoEnvioActual = 0;
 
-/* FIX 2.1/5.4 — Respuestas correctas de los 3 CAPTCHAs */
 const captchas = { login: 0, register: 0, pedido: 0 };
 
 /* =========================================
@@ -26,7 +25,7 @@ window.onload = function() {
 };
 
 /* =========================================
-   FIX 2.1/5.4 — CAPTCHA MATEMÁTICO
+   CAPTCHA MATEMÁTICO
    ========================================= */
 function generarCaptcha(tipo) {
     const a = Math.floor(Math.random() * 9) + 1;
@@ -41,7 +40,7 @@ function generarCaptcha(tipo) {
 
 function validarCaptcha(tipo) {
     const input = document.getElementById(`captcha-${tipo}-respuesta`);
-    if (!input) return true; // si no existe el CAPTCHA en esta página, no bloquea
+    if (!input) return true;
     const valor = parseInt(input.value, 10);
     if (isNaN(valor) || valor !== captchas[tipo]) {
         alert("Verificación humana incorrecta. Intenta de nuevo.");
@@ -119,7 +118,6 @@ async function checkSession() {
 }
 
 async function loginCliente() {
-    // FIX 2.1/5.4 — validar CAPTCHA primero
     if (!validarCaptcha('login')) return;
 
     const tel = document.getElementById('log-tel').value;
@@ -138,7 +136,6 @@ async function loginCliente() {
         catch (err) { console.error("PHP Error:", text); return alert("Error en el servidor."); }
 
         if (data.success) {
-            // FIX 5.3/8.2 — respetar redirección pendiente si venía de una página privada
             const destino = localStorage.getItem('redir_after_login');
             localStorage.removeItem('redir_after_login');
             window.location.href = destino || 'login.html';
@@ -148,7 +145,6 @@ async function loginCliente() {
 }
 
 async function registerCliente() {
-    // FIX 2.1/5.4 — validar CAPTCHA primero
     if (!validarCaptcha('register')) return;
 
     let coloniaFinal = document.getElementById('reg-colonia').value;
@@ -241,7 +237,6 @@ function mostrarForm(tipo) {
     document.getElementById('form-register').classList.add('hidden');
     document.getElementById(`form-${tipo}`).classList.remove('hidden');
     document.querySelector('.app-content').scrollTop = 0;
-    // FIX 2.1/5.4 — generar CAPTCHA al abrir el formulario
     generarCaptcha(tipo);
 }
 
@@ -344,6 +339,9 @@ function actualizarBotonCarrito() {
     document.getElementById('cart-count').innerText = count;
 }
 
+/* =========================================
+   CALCULAR ENVÍO — $10, $15, $20
+   ========================================= */
 function calcularEnvio() {
     const coloniaSelect = document.getElementById('del-colonia');
     if (!coloniaSelect) return;
@@ -351,11 +349,11 @@ function calcularEnvio() {
     const colonia = coloniaSelect.value;
     
     if (colonia === 'Centro' || colonia === 'Barrio del Zapote' || colonia === 'Barrio de la Cruz') {
-        costoEnvioActual = 30;
+        costoEnvioActual = 10;
     } else if (colonia === 'Benito Juárez' || colonia === 'Emiliano Zapata') {
-        costoEnvioActual = 50;
+        costoEnvioActual = 15;
     } else if (colonia === 'Lázaro Cárdenas' || colonia === 'Otra') {
-        costoEnvioActual = 80;
+        costoEnvioActual = 20;
     } else {
         costoEnvioActual = 0; 
     }
@@ -413,7 +411,6 @@ function abrirCarrito() {
         }
     }
 
-    // FIX 2.1/5.4 — generar CAPTCHA del pedido al abrir el carrito
     generarCaptcha('pedido');
 
     document.getElementById('cart-modal').classList.remove('hidden');
@@ -437,7 +434,6 @@ function guardarCarritoYRecargar() {
 function irAPago() {
     if (!clienteData) { mostrarAvisoLogin(); return; }
 
-    // FIX 2.1/5.4 — validar CAPTCHA antes de continuar al pago
     if (!validarCaptcha('pedido')) return;
     
     const metodo = document.getElementById('payment-method').value;
@@ -451,7 +447,6 @@ function irAPago() {
 function volverAPaso1() {
     document.getElementById('payment-step-card').classList.add('hidden');
     document.getElementById('payment-step-1').classList.remove('hidden');
-    // FIX 2.1/5.4 — regenerar CAPTCHA al regresar (por si acaso)
     generarCaptcha('pedido');
 }
 
@@ -537,7 +532,6 @@ async function procesarPago(event) {
             alert(data.error || "Error al procesar el pago");
             btn.innerHTML = textoOriginal;
             btn.disabled = false;
-            // Regenerar CAPTCHA en caso de error
             generarCaptcha('pedido');
         }
     } catch (e) { 
@@ -555,53 +549,51 @@ function descargarTicketPDF() {
 }
 
 /* =========================================
-   NARRADOR
+   NARRADOR (Audio propio — historia.mp4)
    ========================================= */
 let reproduciendoNarracion = false;
-let sintetizador = window.speechSynthesis;
-let utterance = null;
-
-function obtenerVozDeCalidad() {
-    const voces = sintetizador.getVoices();
-    const vocesEspanol = voces.filter(voz => voz.lang.includes('es'));
-    const vozPremium = vocesEspanol.find(v => v.name.toLowerCase().includes('neural') || v.name.toLowerCase().includes('premium') || v.name.toLowerCase().includes('natural'));
-    if (vozPremium) return vozPremium;
-    const nombresBuenos = ['Paulina', 'Sabina', 'Mónica', 'Monica', 'Helena', 'Luciana', 'Google español'];
-    for (let nombre of nombresBuenos) {
-        const encontrada = vocesEspanol.find(v => v.name.includes(nombre));
-        if (encontrada) return encontrada;
-    }
-    return vocesEspanol.length > 0 ? vocesEspanol[0] : null;
-}
 
 function controlarNarrador() {
     const btn = document.getElementById('btn-narrador');
-    const texto = document.getElementById('texto-narracion').innerText;
-    if (!('speechSynthesis' in window)) { alert("Tu navegador no soporta la narración."); return; }
+    const audio = document.getElementById('audio-historia');
+
+    if (!audio) {
+        alert("No se encontró el reproductor de audio.");
+        return;
+    }
+
     if (reproduciendoNarracion) {
-        sintetizador.cancel();
+        audio.pause();
+        audio.currentTime = 0;
         reproduciendoNarracion = false;
         btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Escuchar Historia';
         btn.classList.remove('playing');
         return;
     }
-    utterance = new SpeechSynthesisUtterance(texto);
-    utterance.lang = 'es-MX';
-    utterance.rate = 0.85; 
-    utterance.pitch = 1.0; 
-    const vozElegida = obtenerVozDeCalidad();
-    if (vozElegida) utterance.voice = vozElegida;
-    utterance.onend = function() {
-        reproduciendoNarracion = false;
-        btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Escuchar Historia';
-        btn.classList.remove('playing');
-    };
-    sintetizador.speak(utterance);
-    reproduciendoNarracion = true;
-    btn.innerHTML = '<i class="fa-solid fa-stop"></i> Detener Narración';
-    btn.classList.add('playing');
+
+    audio.play().then(() => {
+        reproduciendoNarracion = true;
+        btn.innerHTML = '<i class="fa-solid fa-stop"></i> Detener Audio';
+        btn.classList.add('playing');
+    }).catch((err) => {
+        console.error("Error al reproducir el audio:", err);
+        alert("No se pudo reproducir. Verifica que 'historia.mp4' esté en la misma carpeta que tus HTML.");
+    });
 }
-if (speechSynthesis.onvoiceschanged !== undefined) { speechSynthesis.onvoiceschanged = obtenerVozDeCalidad; }
+
+window.addEventListener('load', () => {
+    const audio = document.getElementById('audio-historia');
+    if (audio) {
+        audio.addEventListener('ended', () => {
+            reproduciendoNarracion = false;
+            const btn = document.getElementById('btn-narrador');
+            if (btn) {
+                btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Escuchar Historia';
+                btn.classList.remove('playing');
+            }
+        });
+    }
+});
 
 /* =========================================
    AVISO DE LOGIN
