@@ -77,6 +77,13 @@
                     <h1 style="font-family: Georgia, serif; font-size: 2.2rem; margin-bottom: 15px; color: var(--dorado);">"El aroma de nuestra historia, el sabor de nuestra tradición"</h1>
                     <p style="font-size: 1.1rem; max-width: 700px; margin: 0 auto;">Conoce el legado familiar, la cultura y la pasión que hay detrás de cada platillo que preparamos para ti.</p>
                     
+                    <!-- Reproductor de audio propio -->
+                    <audio id="audio-historia" preload="metadata" style="display:none;">
+                        <source src="historia.mp4" type="audio/mp4">
+                        <source src="historia.mp4" type="video/mp4">
+                        Tu navegador no soporta audio.
+                    </audio>
+
                     <button id="btn-narrador" class="btn-narrador" onclick="controlarNarrador()">
                         <i class="fa-solid fa-volume-high"></i> Escuchar Historia
                     </button>
